@@ -11,10 +11,12 @@ import com.insideout.model.memory.type.StoreType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 
+@Entity
 @Table(name = "memory_marble")
 class MemoryMarbleJpaEntity(
     @Column(name = "memberId", columnDefinition = "bigint", nullable = false)

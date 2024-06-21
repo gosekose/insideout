@@ -6,6 +6,7 @@ import com.insideout.memory.repository.MemoryMarbleJpaRepository
 import com.insideout.model.feeling.Feelings
 import com.insideout.model.memory.MemoryMarble
 import com.insideout.model.memory.MemoryMarbles
+import com.insideout.usecase.memory.GetMemoryMarbleUseCase
 import com.insideout.usecase.memory.port.MemoryMarbleReader
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
@@ -20,10 +21,30 @@ class MemoryMarbleReaderAdapter(
         return memoryMarbleJpaRepository.findByIdOrNull(id)?.let { it.toModel(getFeelings(it.feelingIds)) }
     }
 
-    override fun getAll(ids: List<Long>): MemoryMarbles {
-        return memoryMarbleJpaRepository.findByIdInAndSoftDeleteStatus(ids)
-            .map { it.toModel(getFeelings(it.feelingIds)) }
-            .let(::MemoryMarbles)
+    override fun getAll(query: GetMemoryMarbleUseCase.Query): MemoryMarbles {
+        val memoryMarbleJpaEntities =
+            with(query) {
+                memoryMarbleJpaRepository.findByOffsetSearch(
+                    memberId = memberId,
+                    storeType = storeType,
+                    lastId = offsetSearch.lastId,
+                    size = offsetSearch.size,
+                )
+            }
+
+        val feelingsMap =
+            feelingJpaRepository.findByIdInAndSoftDeleteStatus(
+                ids = memoryMarbleJpaEntities.flatMap { it.feelingIds },
+            ).associateBy { it.id }
+
+        return memoryMarbleJpaEntities.map { memoryMarble ->
+            val findFeelings =
+                memoryMarble.feelingIds
+                    .mapNotNull { feelingsMap[it]?.toModel() }
+                    .sortedBy { it.createdAt }
+                    .let(::Feelings)
+            memoryMarble.toModel(findFeelings)
+        }.let(::MemoryMarbles)
     }
 
     private fun getFeelings(feelingsIds: List<Long>): Feelings {
@@ -31,10 +52,8 @@ class MemoryMarbleReaderAdapter(
             Feelings(mutableListOf())
         } else {
             feelingJpaRepository.findByIdInAndSoftDeleteStatus(feelingsIds)
-                .asSequence()
                 .sortedBy { it.createdAt }
                 .map { it.toModel() }
-                .toList()
                 .let(::Feelings)
         }
     }

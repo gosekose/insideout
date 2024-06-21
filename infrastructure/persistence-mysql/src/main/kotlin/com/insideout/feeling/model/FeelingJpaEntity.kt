@@ -7,10 +7,12 @@ import com.insideout.base.applyWithEntity
 import com.insideout.model.feeling.Feeling
 import com.insideout.model.feeling.type.FeelingType
 import jakarta.persistence.Column
+import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 
+@Entity
 @Table(name = "feeling")
 class FeelingJpaEntity(
     @Column(name = "memberId", columnDefinition = "bigint", nullable = false)
