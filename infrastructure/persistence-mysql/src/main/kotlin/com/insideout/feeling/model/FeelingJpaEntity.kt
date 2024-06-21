@@ -42,9 +42,11 @@ class FeelingJpaEntity(
     fun update(
         score: Long,
         type: FeelingType,
-    ) = this.apply {
-        this.score = score
-        this.type = type
+    ): FeelingJpaEntity {
+        return this.apply {
+            this.score = score
+            this.type = type
+        }
     }
 
     companion object {

@@ -50,14 +50,16 @@ class MemoryMarbleJpaEntity(
     fun update(
         feelings: List<Long>,
         content: ContentField,
-    ): MemoryMarbleJpaEntity =
-        this.apply {
+    ): MemoryMarbleJpaEntity {
+        return this.apply {
             this.feelingIds = feelings
             this.content = content
         }
+    }
 
-    fun update(storeType: StoreType) =
-        this.apply {
+    fun update(storeType: StoreType): MemoryMarbleJpaEntity {
+        return this.apply {
             this.storeType = storeType
         }
+    }
 }
