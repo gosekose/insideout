@@ -4,9 +4,9 @@ import com.insideout.model.feeling.Feeling
 import com.insideout.model.feeling.Feelings
 import com.insideout.model.feeling.model.FeelingMemoryMarbleConnect
 import com.insideout.usecase.feeling.port.FeelingSaver
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class CreateFeelingsService(
     private val feelingSaver: FeelingSaver,
 ) : CreateFeelingsUseCase {

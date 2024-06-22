@@ -1,9 +1,9 @@
 package com.insideout.usecase.feeling
 
 import com.insideout.usecase.feeling.port.FeelingRemover
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class RemoveFeelingsService(
     private val feelingRemover: FeelingRemover,
 ) : RemoveFeelingsUseCase {

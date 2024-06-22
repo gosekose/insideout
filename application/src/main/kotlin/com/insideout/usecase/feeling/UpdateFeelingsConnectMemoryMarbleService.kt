@@ -3,9 +3,9 @@ package com.insideout.usecase.feeling
 import com.insideout.model.feeling.Feelings
 import com.insideout.model.feeling.model.FeelingMemoryMarbleConnect
 import com.insideout.usecase.feeling.port.FeelingUpdater
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class UpdateFeelingsConnectMemoryMarbleService(
     private val feelingUpdater: FeelingUpdater,
 ) : UpdateFeelingsConnectMemoryMarbleUseCase {

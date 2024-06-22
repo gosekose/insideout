@@ -6,10 +6,10 @@ import com.insideout.usecase.memory.port.MemoryMarbleReader
 import org.springframework.stereotype.Component
 
 @Component
-class GetMemoryMarbleService(
+class GetMemoryMarblesByPaginationService(
     private val memoryMarbleReader: MemoryMarbleReader,
-) : GetMemoryMarbleUseCase {
-    override fun execute(query: GetMemoryMarbleUseCase.Query): Pagination<MemoryMarble> {
+) : GetMemoryMarblesByPaginationUseCase {
+    override fun execute(query: GetMemoryMarblesByPaginationUseCase.Query): Pagination<MemoryMarble> {
         val memoryMarbles = memoryMarbleReader.getAll(query)
         return Pagination(
             content = memoryMarbles,

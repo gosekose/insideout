@@ -4,13 +4,15 @@ import com.insideout.model.memory.MemoryMarble
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
 import com.insideout.usecase.feeling.UpdateFeelingsConnectMemoryMarbleUseCase
 import com.insideout.usecase.memory.CreateMemoryMarbleUseCase
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
-@Component
+@Service
+@Transactional(readOnly = false)
 class CreateFeelingAndMemoryMarbleAggregateService(
     private val createFeelingsUseCase: CreateFeelingsUseCase,
-    private val updateFeelingsConnectMemoryMarbleUseCase: UpdateFeelingsConnectMemoryMarbleUseCase,
     private val createMemoryMarbleUseCase: CreateMemoryMarbleUseCase,
+    private val updateFeelingsConnectMemoryMarbleUseCase: UpdateFeelingsConnectMemoryMarbleUseCase,
 ) : CreateFeelingAndMemoryMarbleAggregate {
     override fun create(definition: CreateFeelingAndMemoryMarbleAggregate.Definition): MemoryMarble {
         val (memberId, feelingDefinitions, content) = definition

@@ -2,9 +2,9 @@ package com.insideout.usecase.feeling
 
 import com.insideout.model.feeling.Feelings
 import com.insideout.usecase.feeling.port.FeelingReader
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class GetFeelingsService(
     private val feelingReader: FeelingReader,
 ) : GetFeelingsUseCase {

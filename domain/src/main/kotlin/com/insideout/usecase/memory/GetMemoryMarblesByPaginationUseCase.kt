@@ -4,7 +4,7 @@ import com.insideout.model.memory.MemoryMarble
 import com.insideout.model.memory.type.StoreType
 import com.insideout.model.page.Pagination
 
-interface GetMemoryMarbleUseCase {
+interface GetMemoryMarblesByPaginationUseCase {
     fun execute(query: Query): Pagination<MemoryMarble>
 
     data class Query(
