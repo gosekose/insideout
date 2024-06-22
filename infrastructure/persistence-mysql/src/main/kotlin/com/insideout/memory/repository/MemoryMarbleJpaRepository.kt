@@ -6,7 +6,9 @@ import com.insideout.memory.model.QMemoryMarbleJpaEntity
 import com.insideout.model.memory.type.StoreType
 import com.querydsl.jpa.impl.JPAQueryFactory
 
-interface MemoryMarbleJpaRepository : BaseJpaRepository<MemoryMarbleJpaEntity, Long>, MemoryMarbleJpaCustom
+interface MemoryMarbleJpaRepository : BaseJpaRepository<MemoryMarbleJpaEntity, Long>, MemoryMarbleJpaCustom {
+    fun existsByIdGreaterThan(id: Long): Boolean
+}
 
 interface MemoryMarbleJpaCustom {
     fun findByOffsetSearch(

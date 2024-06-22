@@ -8,4 +8,6 @@ interface MemoryMarbleReader {
     fun getOrNull(id: Long): MemoryMarble?
 
     fun getAll(query: GetMemoryMarbleUseCase.Query): MemoryMarbles
+
+    fun hasNext(currentId: Long): Boolean
 }

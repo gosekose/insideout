@@ -47,6 +47,10 @@ class MemoryMarbleReaderAdapter(
         }.let(::MemoryMarbles)
     }
 
+    override fun hasNext(currentId: Long): Boolean {
+        return memoryMarbleJpaRepository.existsByIdGreaterThan(currentId)
+    }
+
     private fun getFeelings(feelingsIds: List<Long>): Feelings {
         return if (feelingsIds.isEmpty()) {
             Feelings(mutableListOf())

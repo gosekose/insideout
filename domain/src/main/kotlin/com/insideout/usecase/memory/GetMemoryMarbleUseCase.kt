@@ -1,10 +1,11 @@
 package com.insideout.usecase.memory
 
-import com.insideout.model.memory.MemoryMarbles
+import com.insideout.model.memory.MemoryMarble
 import com.insideout.model.memory.type.StoreType
+import com.insideout.model.page.Pagination
 
 interface GetMemoryMarbleUseCase {
-    fun execute(query: Query): MemoryMarbles
+    fun execute(query: Query): Pagination<MemoryMarble>
 
     data class Query(
         val memberId: Long,
