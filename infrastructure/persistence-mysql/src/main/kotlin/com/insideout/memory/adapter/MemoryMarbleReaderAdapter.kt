@@ -51,14 +51,10 @@ class MemoryMarbleReaderAdapter(
         return memoryMarbleJpaRepository.existsByIdGreaterThan(currentId)
     }
 
-    private fun getFeelings(feelingsIds: List<Long>): Feelings {
-        return if (feelingsIds.isEmpty()) {
-            Feelings(mutableListOf())
-        } else {
-            feelingJpaRepository.findByIdInAndSoftDeleteStatus(feelingsIds)
-                .sortedBy { it.createdAt }
-                .map { it.toModel() }
-                .let(::Feelings)
-        }
+    private fun getFeelings(feelingIds: List<Long>): Feelings {
+        return feelingJpaRepository.findByIdInAndSoftDeleteStatus(feelingIds)
+            .sortedBy { it.createdAt }
+            .map { it.toModel() }
+            .let(::Feelings)
     }
 }

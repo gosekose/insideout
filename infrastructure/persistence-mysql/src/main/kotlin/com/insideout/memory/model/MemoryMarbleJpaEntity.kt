@@ -2,9 +2,10 @@ package com.insideout.memory.model
 
 import com.insideout.base.BaseJpaEntity
 import com.insideout.base.SoftDeleteStatus
+import com.insideout.base.applyWithDomainModel
 import com.insideout.base.applyWithEntity
 import com.insideout.converter.ListLongToStringConverter
-import com.insideout.memory.model.field.ContentField
+import com.insideout.memory.model.model.ContentJpaModel
 import com.insideout.model.feeling.Feelings
 import com.insideout.model.memory.MemoryMarble
 import com.insideout.model.memory.type.StoreType
@@ -21,17 +22,17 @@ import jakarta.persistence.Table
 class MemoryMarbleJpaEntity(
     @Column(name = "memberId", columnDefinition = "bigint", nullable = false)
     val memberId: Long,
+    @Embedded
+    val content: ContentJpaModel,
     @Column(name = "feelingIds", columnDefinition = "varchar(255)", nullable = false)
     @Convert(converter = ListLongToStringConverter::class)
-    var feelingIds: List<Long> = mutableListOf(),
-    @Embedded
-    var content: ContentField,
+    val feelingIds: List<Long> = mutableListOf(),
     @Enumerated(value = EnumType.STRING)
     @Column(name = "storeType", columnDefinition = "varchar(32)", nullable = false)
-    var storeType: StoreType,
+    val storeType: StoreType,
     @Enumerated
     @Column(name = "status", columnDefinition = "varchar(32)", nullable = false)
-    var softDeleteStatus: SoftDeleteStatus,
+    val softDeleteStatus: SoftDeleteStatus,
 ) : BaseJpaEntity() {
     fun toModel(feelings: Feelings): MemoryMarble {
         return MemoryMarble(
@@ -43,25 +44,18 @@ class MemoryMarbleJpaEntity(
         ).applyWithEntity(this)
     }
 
-    fun remove(): MemoryMarbleJpaEntity {
-        return this.apply {
-            softDeleteStatus = SoftDeleteStatus.INACTIVE
-        }
-    }
-
-    fun update(
-        feelings: List<Long>,
-        content: ContentField,
-    ): MemoryMarbleJpaEntity {
-        return this.apply {
-            this.feelingIds = feelings
-            this.content = content
-        }
-    }
-
-    fun update(storeType: StoreType): MemoryMarbleJpaEntity {
-        return this.apply {
-            this.storeType = storeType
+    companion object {
+        @JvmStatic
+        fun from(memoryMarble: MemoryMarble): MemoryMarbleJpaEntity {
+            return with(memoryMarble) {
+                MemoryMarbleJpaEntity(
+                    memberId = memberId,
+                    content = ContentJpaModel.from(content),
+                    feelingIds = feelings.map { it.id },
+                    storeType = storeType,
+                    softDeleteStatus = SoftDeleteStatus.ACTIVE,
+                )
+            }.applyWithDomainModel(memoryMarble)
         }
     }
 }

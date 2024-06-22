@@ -4,7 +4,7 @@ import com.insideout.annotation.WritableTransactional
 import com.insideout.base.notnull
 import com.insideout.feeling.model.FeelingJpaEntity
 import com.insideout.feeling.repository.FeelingJpaRepository
-import com.insideout.memory.model.field.ContentField
+import com.insideout.memory.model.model.ContentJpaModel
 import com.insideout.memory.repository.MemoryMarbleJpaRepository
 import com.insideout.model.feeling.Feelings
 import com.insideout.model.memory.MemoryMarble
@@ -38,8 +38,8 @@ class MemoryMarbleUpdaterAdapter(
 
         return memoryMarbleJpaRepository.save(
             memoryMarbleJpaEntity.update(
-                feelings = savedFeelings.map { it.id },
-                content = ContentField.from(content),
+                feelingIds = savedFeelings.map { it.id },
+                content = ContentJpaModel.from(content),
             ),
         ).toModel(Feelings(savedFeelings))
     }

@@ -5,9 +5,9 @@ import com.insideout.model.memory.MemoryMarble
 import com.insideout.model.memory.model.Content
 
 interface CreateMemoryMarbleUseCase {
-    fun execute(command: Command): MemoryMarble
+    fun execute(definition: Definition): MemoryMarble
 
-    data class Command(
+    data class Definition(
         val memberId: Long,
         val feelings: Feelings,
         val content: Content,

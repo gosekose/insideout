@@ -1,11 +1,11 @@
-package com.insideout.memory.model.field
+package com.insideout.memory.model.model
 
 import com.insideout.model.memory.model.Content
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-data class ContentField(
+data class ContentJpaModel(
     @Column(name = "description", columnDefinition = "text", nullable = true)
     val description: String?,
 ) {
@@ -17,9 +17,9 @@ data class ContentField(
 
     companion object {
         @JvmStatic
-        fun from(content: Content): ContentField {
+        fun from(content: Content): ContentJpaModel {
             return with(content) {
-                ContentField(
+                ContentJpaModel(
                     description = description,
                 )
             }

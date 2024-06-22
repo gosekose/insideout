@@ -9,4 +9,9 @@ interface FeelingJpaRepository : BaseJpaRepository<FeelingJpaEntity, Long> {
         ids: List<Long>,
         softDeleteStatus: SoftDeleteStatus = SoftDeleteStatus.ACTIVE,
     ): List<FeelingJpaEntity>
+
+    fun findByMemoryMarbleConnectMemoryMarbleIdAndSoftDeleteStatus(
+        memoryMarbleConnectMemoryMarbleId: Long,
+        softDeleteStatus: SoftDeleteStatus = SoftDeleteStatus.ACTIVE,
+    ): List<FeelingJpaEntity>
 }
