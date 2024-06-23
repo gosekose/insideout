@@ -15,10 +15,18 @@ import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.Index
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "feeling")
+@Table(
+    name = "feeling",
+    indexes = [
+        Index(name = "idx_feeling__createdAt", columnList = "createdAt"),
+        Index(name = "idx_feeling__memoryMarbleId", columnList = "memoryMarbleId"),
+        Index(name = "idx_feeling__memberId", columnList = "memberId"),
+    ],
+)
 class FeelingJpaEntity(
     @Column(name = "memberId", columnDefinition = "bigint", nullable = false)
     val memberId: Long,
