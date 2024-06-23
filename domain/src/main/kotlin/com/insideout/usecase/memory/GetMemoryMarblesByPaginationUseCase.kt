@@ -9,7 +9,7 @@ interface GetMemoryMarblesByPaginationUseCase {
 
     data class Query(
         val memberId: Long,
-        val storeType: StoreType,
+        val storeType: StoreType?,
         val offsetSearch: OffsetSearch,
     ) {
         data class OffsetSearch(

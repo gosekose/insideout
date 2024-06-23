@@ -13,7 +13,7 @@ interface MemoryMarbleJpaRepository : BaseJpaRepository<MemoryMarbleJpaEntity, L
 interface MemoryMarbleJpaCustom {
     fun findByOffsetSearch(
         memberId: Long,
-        storeType: StoreType,
+        storeType: StoreType?,
         lastId: Long,
         size: Long,
     ): List<MemoryMarbleJpaEntity>
@@ -26,14 +26,16 @@ class MemoryMarbleJpaCustomImpl(
 
     override fun findByOffsetSearch(
         memberId: Long,
-        storeType: StoreType,
+        storeType: StoreType?,
         lastId: Long,
         size: Long,
     ): List<MemoryMarbleJpaEntity> {
         return jpaQueryFactory.selectFrom(qMemoryMarbleJpaEntity)
             .where(
                 qMemoryMarbleJpaEntity.memberId.eq(memberId),
-                qMemoryMarbleJpaEntity.storeType.eq(storeType),
+                storeType?.let {
+                    qMemoryMarbleJpaEntity.storeType.eq(storeType)
+                },
                 qMemoryMarbleJpaEntity.id.gt(lastId),
             )
             .offset(size)

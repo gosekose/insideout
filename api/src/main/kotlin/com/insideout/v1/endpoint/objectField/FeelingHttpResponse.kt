@@ -1,4 +1,4 @@
-package com.insideout.v1.objectField
+package com.insideout.v1.endpoint.objectField
 
 import com.insideout.model.feeling.Feeling
 import com.insideout.model.feeling.model.FeelingMemoryMarbleConnect

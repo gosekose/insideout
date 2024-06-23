@@ -1,10 +1,10 @@
-package com.insideout.v1.memory
+package com.insideout.v1.endpoint.memory.post
 
 import com.insideout.aggregate.CreateFeelingAndMemoryMarbleAggregate
 import com.insideout.model.feeling.type.FeelingType
 import com.insideout.model.memory.model.MemoryMarbleContent
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
-import com.insideout.v1.objectField.MemoryMarbleHttpResponse
+import com.insideout.v1.endpoint.objectField.MemoryMarbleHttpResponse
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -30,7 +30,7 @@ class CreateMemoryMarbleRestController(
 
     data class HttpRequest(
         val content: String,
-        val feelings: List<FeelingDefinitionHttpRequest>,
+        val feelings: List<FeelingDefinitionHttpField>,
     ) {
         fun toAggregateDefinition(memberId: Long): CreateFeelingAndMemoryMarbleAggregate.Definition {
             return CreateFeelingAndMemoryMarbleAggregate.Definition(
@@ -40,7 +40,7 @@ class CreateMemoryMarbleRestController(
             )
         }
 
-        data class FeelingDefinitionHttpRequest(
+        data class FeelingDefinitionHttpField(
             val score: Long,
             val type: FeelingType,
         ) {
