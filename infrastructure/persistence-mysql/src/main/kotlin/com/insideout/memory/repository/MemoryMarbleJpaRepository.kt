@@ -5,7 +5,9 @@ import com.insideout.memory.model.QMemoryMarbleJpaEntity
 import com.insideout.model.memory.type.StoreType
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
+@Repository
 interface MemoryMarbleJpaRepository : JpaRepository<MemoryMarbleJpaEntity, Long>, MemoryMarbleJpaCustom {
     fun existsByIdGreaterThan(id: Long): Boolean
 }

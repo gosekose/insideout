@@ -65,6 +65,7 @@ subprojects {
 
     tasks.withType<BootJar> {
         enabled = false
+        mainClass.set("com.insideout.ApiApplicationKt")
     }
 
     tasks.withType<Jar> {
@@ -80,5 +81,12 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType<BootJar> {
-    mainClass = "com.insideout.ApiApplicationKt"
+    mainClass.set("com.insideout.ApiApplicationKt")
+}
+
+if (hasProperty("buildScan")) {
+    extensions.findByName("buildScan")?.withGroovyBuilder {
+        setProperty("termsOfServiceUrl", "https://gradle.com/terms-of-service")
+        setProperty("termsOfServiceAgree", "yes")
+    }
 }

@@ -3,7 +3,9 @@ package com.insideout.feeling.repository
 import com.insideout.base.SoftDeleteStatus
 import com.insideout.feeling.model.FeelingJpaEntity
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
+@Repository
 interface FeelingJpaRepository : JpaRepository<FeelingJpaEntity, Long> {
     fun findByIdInAndSoftDeleteStatus(
         ids: List<Long>,

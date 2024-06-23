@@ -7,6 +7,7 @@ pluginManagement {
 
     plugins {
         id("org.springframework.boot") version "3.3.0"
+        id("com.gradle.enterprise") version "3.13"
         id("io.spring.dependency-management") version "1.1.5"
         id("org.jetbrains.kotlin.jvm") version "1.9.24"
         id("org.jetbrains.kotlin.plugin.spring") version "1.9.24"
