@@ -5,7 +5,7 @@ import com.insideout.base.SoftDeleteStatus
 import com.insideout.base.applyWithDomainModel
 import com.insideout.base.applyWithEntity
 import com.insideout.converter.ListLongToStringConverter
-import com.insideout.memory.model.model.ContentJpaModel
+import com.insideout.memory.model.model.MemoryMarbleContentJpaModel
 import com.insideout.model.feeling.Feelings
 import com.insideout.model.memory.MemoryMarble
 import com.insideout.model.memory.type.StoreType
@@ -23,7 +23,7 @@ class MemoryMarbleJpaEntity(
     @Column(name = "memberId", columnDefinition = "bigint", nullable = false)
     val memberId: Long,
     @Embedded
-    val content: ContentJpaModel,
+    val content: MemoryMarbleContentJpaModel,
     @Column(name = "feelingIds", columnDefinition = "varchar(255)", nullable = false)
     @Convert(converter = ListLongToStringConverter::class)
     val feelingIds: List<Long> = mutableListOf(),
@@ -39,7 +39,7 @@ class MemoryMarbleJpaEntity(
             id = id,
             memberId = memberId,
             feelings = feelings,
-            content = content.toModel(),
+            memoryMarbleContent = content.toModel(),
             storeType = storeType,
         ).applyWithEntity(this)
     }
@@ -56,7 +56,7 @@ class MemoryMarbleJpaEntity(
             return with(memoryMarble) {
                 MemoryMarbleJpaEntity(
                     memberId = memberId,
-                    content = ContentJpaModel.from(content),
+                    content = MemoryMarbleContentJpaModel.from(memoryMarbleContent),
                     feelingIds = feelings.map { it.id },
                     storeType = storeType,
                     softDeleteStatus = SoftDeleteStatus.ACTIVE,

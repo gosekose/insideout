@@ -37,7 +37,7 @@ class RedefineFeelingAndMemoryMarbleAggregateService(
             RedefineMemoryMarbleUseCase.Redefinition(
                 memoryMarble = memoryMarble,
                 feelings = feelings,
-                content = content,
+                memoryMarbleContent = content,
             ),
         )
     }

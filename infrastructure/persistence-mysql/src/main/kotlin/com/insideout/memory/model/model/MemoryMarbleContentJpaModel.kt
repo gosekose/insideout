@@ -1,25 +1,25 @@
 package com.insideout.memory.model.model
 
-import com.insideout.model.memory.model.Content
+import com.insideout.model.memory.model.MemoryMarbleContent
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-data class ContentJpaModel(
+data class MemoryMarbleContentJpaModel(
     @Column(name = "description", columnDefinition = "text", nullable = true)
     val description: String?,
 ) {
-    fun toModel(): Content {
-        return Content(
+    fun toModel(): MemoryMarbleContent {
+        return MemoryMarbleContent(
             description = description,
         )
     }
 
     companion object {
         @JvmStatic
-        fun from(content: Content): ContentJpaModel {
-            return with(content) {
-                ContentJpaModel(
+        fun from(memoryMarbleContent: MemoryMarbleContent): MemoryMarbleContentJpaModel {
+            return with(memoryMarbleContent) {
+                MemoryMarbleContentJpaModel(
                     description = description,
                 )
             }

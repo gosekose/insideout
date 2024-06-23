@@ -30,7 +30,7 @@ class CreateFeelingAndMemoryMarbleAggregateService(
                 CreateMemoryMarbleUseCase.Definition(
                     memberId = memberId,
                     feelings = feelings,
-                    content = content,
+                    memoryMarbleContent = content,
                 ),
             )
 

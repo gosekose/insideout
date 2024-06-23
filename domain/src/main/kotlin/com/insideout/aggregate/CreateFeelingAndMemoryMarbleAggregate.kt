@@ -1,7 +1,7 @@
 package com.insideout.aggregate
 
 import com.insideout.model.memory.MemoryMarble
-import com.insideout.model.memory.model.Content
+import com.insideout.model.memory.model.MemoryMarbleContent
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
 
 interface CreateFeelingAndMemoryMarbleAggregate {
@@ -10,6 +10,6 @@ interface CreateFeelingAndMemoryMarbleAggregate {
     data class Definition(
         val memberId: Long,
         val feelingDefinitions: List<CreateFeelingsUseCase.Definition.FeelingDefinition>,
-        val content: Content,
+        val memoryMarbleContent: MemoryMarbleContent,
     )
 }

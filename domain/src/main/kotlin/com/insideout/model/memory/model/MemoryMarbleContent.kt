@@ -1,5 +1,5 @@
 package com.insideout.model.memory.model
 
-data class Content(
+data class MemoryMarbleContent(
     val description: String?,
 )

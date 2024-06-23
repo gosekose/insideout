@@ -13,7 +13,7 @@ class RedefineMemoryMarbleService(
         return memoryMarbleSaver.save(
             memoryMarble.update(
                 feelings = feelings,
-                content = content,
+                memoryMarbleContent = content,
             ),
         )
     }
