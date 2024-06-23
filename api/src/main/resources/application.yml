@@ -7,7 +7,6 @@ server:
   shutdown: graceful
 
 ---
-
 spring:
   config:
     activate:
@@ -35,6 +34,9 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
 
+jwt:
+  secret-key: gslQJkmrazoY1ytKUji6V0Qd49dWiCXxXVFMFQLezNuxEoFTQ7Xl6A1F7piKFybsZnoE06nnvaMbpAbPcKoeBg==
+
 ---
 spring:
   config:
@@ -55,3 +57,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}

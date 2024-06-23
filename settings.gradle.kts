@@ -19,6 +19,7 @@ pluginManagement {
 include("domain")
 include("infrastructure")
 include("infrastructure:persistence-mysql")
+include("infrastructure:authentication-jwt")
 include("application")
 include("lib")
 include("api")
