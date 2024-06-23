@@ -14,7 +14,7 @@ data class MemoryMarble(
 ) : BaseDomainModel() {
     fun update(
         feelings: Feelings,
-        content: Content
+        content: Content,
     ): MemoryMarble {
         return this.apply {
             this.feelings = feelings
@@ -22,9 +22,7 @@ data class MemoryMarble(
         }
     }
 
-    fun update(
-        storeType: StoreType
-    ): MemoryMarble {
+    fun update(storeType: StoreType): MemoryMarble {
         return this.apply {
             this.storeType = storeType
         }

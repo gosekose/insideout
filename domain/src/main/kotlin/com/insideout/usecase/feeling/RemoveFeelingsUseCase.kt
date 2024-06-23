@@ -6,6 +6,6 @@ interface RemoveFeelingsUseCase {
     fun execute(command: Command)
 
     data class Command(
-        val feelings: Feelings
+        val feelings: Feelings,
     )
 }

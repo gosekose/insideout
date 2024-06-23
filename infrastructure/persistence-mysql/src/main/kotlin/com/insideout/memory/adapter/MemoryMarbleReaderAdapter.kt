@@ -1,7 +1,6 @@
 package com.insideout.memory.adapter
 
 import com.insideout.annotation.ReadOnlyTransactional
-import com.insideout.feeling.repository.FeelingCommonLogicRepository
 import com.insideout.feeling.repository.FeelingJpaRepository
 import com.insideout.memory.repository.MemoryMarbleJpaRepository
 import com.insideout.model.feeling.Feelings
@@ -10,9 +9,9 @@ import com.insideout.model.memory.MemoryMarbles
 import com.insideout.usecase.memory.GetMemoryMarblesByPaginationUseCase
 import com.insideout.usecase.memory.port.MemoryMarbleReader
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Repository
 
-@Component
+@Repository
 @ReadOnlyTransactional
 class MemoryMarbleReaderAdapter(
     private val feelingJpaRepository: FeelingJpaRepository,

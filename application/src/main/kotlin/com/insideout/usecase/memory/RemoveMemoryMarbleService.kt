@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class RemoveMemoryMarbleService(
-    private val removeMemoryMarbleRemover: MemoryMarbleRemover,
+    private val memoryMarbleRemover: MemoryMarbleRemover,
 ) : RemoveMemoryMarbleUseCase {
     override fun execute(command: RemoveMemoryMarbleUseCase.Command) {
-        removeMemoryMarbleRemover.remove(RemoveMemoryMarbleUseCase.Command(command.id))
+        memoryMarbleRemover.remove(command.id)
     }
 }

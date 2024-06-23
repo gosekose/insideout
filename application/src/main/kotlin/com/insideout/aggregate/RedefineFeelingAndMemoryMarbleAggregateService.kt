@@ -1,12 +1,7 @@
 package com.insideout.aggregate
 
-import com.insideout.model.feeling.Feelings
 import com.insideout.model.memory.MemoryMarble
-import com.insideout.usecase.feeling.CreateFeelingsUseCase
 import com.insideout.usecase.feeling.FeelingsOperatorUseCase
-import com.insideout.usecase.feeling.RedefineFeelingsUseCase
-import com.insideout.usecase.feeling.RemoveFeelingsUseCase
-import com.insideout.usecase.feeling.UpdateFeelingsConnectMemoryMarbleUseCase
 import com.insideout.usecase.memory.GetMemoryMarbleByIdUseCase
 import com.insideout.usecase.memory.RedefineMemoryMarbleUseCase
 import org.springframework.stereotype.Service
@@ -22,26 +17,28 @@ class RedefineFeelingAndMemoryMarbleAggregateService(
     override fun execute(redefinition: RedefineFeelingAndMemoryMarbleAggregate.Redefinition): MemoryMarble {
         val (id, feelingDefinitions, feelingRedefinitions, content) = redefinition
 
-        val memoryMarble = getMemoryMarbleByIdUseCase.execute(
-            GetMemoryMarbleByIdUseCase.Query(
-                id = id,
+        val memoryMarble =
+            getMemoryMarbleByIdUseCase.execute(
+                GetMemoryMarbleByIdUseCase.Query(
+                    id = id,
+                ),
             )
-        )
 
-        val feelings = feelingsOperatorUseCase.operate(
-            FeelingsOperatorUseCase.Command(
-                memoryMarble = memoryMarble,
-                feelingDefinitions = feelingDefinitions,
-                feelingRedefinitions = feelingRedefinitions,
+        val feelings =
+            feelingsOperatorUseCase.operate(
+                FeelingsOperatorUseCase.Command(
+                    memoryMarble = memoryMarble,
+                    feelingDefinitions = feelingDefinitions,
+                    feelingRedefinitions = feelingRedefinitions,
+                ),
             )
-        )
 
         return redefineMemoryMarbleUseCase.execute(
             RedefineMemoryMarbleUseCase.Redefinition(
                 memoryMarble = memoryMarble,
                 feelings = feelings,
                 content = content,
-            )
+            ),
         )
     }
 }

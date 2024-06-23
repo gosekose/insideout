@@ -31,25 +31,30 @@ class FeelingJpaEntity(
     @Column(name = "status", columnDefinition = "varchar(32)", nullable = false)
     var softDeleteStatus: SoftDeleteStatus,
     @Embedded
-    val memoryMarbleConnect: FeelingMemoryMarbleConnectJpaModel
+    val memoryMarbleConnect: FeelingMemoryMarbleConnectJpaModel,
 ) : BaseJpaEntity() {
     fun toModel(): Feeling {
-        val memoryMarbleConnect = with(memoryMarbleConnect) {
-            when (memoryMarbleConnectStatus) {
-                MemoryMarbleConnectStatus.DISCONNECT -> DisConnectMemoryMarble
-                MemoryMarbleConnectStatus.CONNECT -> if (memoryMarbleId == null) DisConnectMemoryMarble
-                else ConnectMemoryMarble(
-                    memoryMarbleId = memoryMarbleId,
-                )
+        val memoryMarbleConnect =
+            with(memoryMarbleConnect) {
+                when (memoryMarbleConnectStatus) {
+                    MemoryMarbleConnectStatus.DISCONNECT -> DisConnectMemoryMarble
+                    MemoryMarbleConnectStatus.CONNECT ->
+                        if (memoryMarbleId == null) {
+                            DisConnectMemoryMarble
+                        } else {
+                            ConnectMemoryMarble(
+                                memoryMarbleId = memoryMarbleId,
+                            )
+                        }
+                }
             }
-        }
 
         return Feeling(
             id = id,
             memberId = memberId,
             score = score,
             type = type,
-            memoryMarbleConnect = memoryMarbleConnect
+            memoryMarbleConnect = memoryMarbleConnect,
         ).applyWithEntity(this)
     }
 
@@ -72,17 +77,20 @@ class FeelingJpaEntity(
     companion object {
         @JvmStatic
         fun from(feeling: Feeling): FeelingJpaEntity {
-            val memoryMarbleConnect = when (val connect = feeling.memoryMarbleConnect) {
-                is DisConnectMemoryMarble -> FeelingMemoryMarbleConnectJpaModel(
-                    memoryMarbleId = null,
-                    memoryMarbleConnectStatus = MemoryMarbleConnectStatus.DISCONNECT,
-                )
+            val memoryMarbleConnect =
+                when (val connect = feeling.memoryMarbleConnect) {
+                    is DisConnectMemoryMarble ->
+                        FeelingMemoryMarbleConnectJpaModel(
+                            memoryMarbleId = null,
+                            memoryMarbleConnectStatus = MemoryMarbleConnectStatus.DISCONNECT,
+                        )
 
-                is ConnectMemoryMarble -> FeelingMemoryMarbleConnectJpaModel(
-                    memoryMarbleId = connect.memoryMarbleId,
-                    memoryMarbleConnectStatus = MemoryMarbleConnectStatus.CONNECT,
-                )
-            }
+                    is ConnectMemoryMarble ->
+                        FeelingMemoryMarbleConnectJpaModel(
+                            memoryMarbleId = connect.memoryMarbleId,
+                            memoryMarbleConnectStatus = MemoryMarbleConnectStatus.CONNECT,
+                        )
+                }
 
             return with(feeling) {
                 FeelingJpaEntity(

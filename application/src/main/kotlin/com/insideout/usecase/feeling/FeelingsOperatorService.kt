@@ -15,25 +15,27 @@ class FeelingsOperatorService(
     override fun operate(command: FeelingsOperatorUseCase.Command): Feelings {
         val (memoryMarble, feelingDefinitions, feelingRedefinitions) = command
 
-        val connectedFeelings = createFeelingsUseCase.execute(
-            CreateFeelingsUseCase.Definition(
-                memberId = memoryMarble.memberId,
-                feelingDefinitions = feelingDefinitions
-            )
-        ).let { createdFeelings ->
-            updateFeelingsConnectMemoryMarbleUseCase.execute(
-                UpdateFeelingsConnectMemoryMarbleUseCase.Command(
-                    memoryMarbleId = memoryMarble.id,
-                    feelings = createdFeelings
+        val connectedFeelings =
+            createFeelingsUseCase.execute(
+                CreateFeelingsUseCase.Definition(
+                    memberId = memoryMarble.memberId,
+                    feelingDefinitions = feelingDefinitions,
+                ),
+            ).let { createdFeelings ->
+                updateFeelingsConnectMemoryMarbleUseCase.execute(
+                    UpdateFeelingsConnectMemoryMarbleUseCase.Command(
+                        memoryMarbleId = memoryMarble.id,
+                        feelings = createdFeelings,
+                    ),
                 )
-            )
-        }
+            }
 
-        val redefinedFeelings = redefineFeelingsUseCase.execute(
-            RedefineFeelingsUseCase.Redefinition(
-                feelingDefinitions = feelingRedefinitions
+        val redefinedFeelings =
+            redefineFeelingsUseCase.execute(
+                RedefineFeelingsUseCase.Redefinition(
+                    feelingDefinitions = feelingRedefinitions,
+                ),
             )
-        )
 
         val toBeFeelings = (connectedFeelings + redefinedFeelings)
         val toBeFeelingsMap = toBeFeelings.associateBy { it.id }

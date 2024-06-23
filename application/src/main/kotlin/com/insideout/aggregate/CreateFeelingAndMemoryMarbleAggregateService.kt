@@ -17,26 +17,28 @@ class CreateFeelingAndMemoryMarbleAggregateService(
     override fun create(definition: CreateFeelingAndMemoryMarbleAggregate.Definition): MemoryMarble {
         val (memberId, feelingDefinitions, content) = definition
 
-        val feelings = createFeelingsUseCase.execute(
-            CreateFeelingsUseCase.Definition(
-                memberId = memberId,
-                feelingDefinitions = feelingDefinitions
+        val feelings =
+            createFeelingsUseCase.execute(
+                CreateFeelingsUseCase.Definition(
+                    memberId = memberId,
+                    feelingDefinitions = feelingDefinitions,
+                ),
             )
-        )
 
-        val memoryMarble = createMemoryMarbleUseCase.execute(
-            CreateMemoryMarbleUseCase.Definition(
-                memberId = memberId,
-                feelings = feelings,
-                content = content,
+        val memoryMarble =
+            createMemoryMarbleUseCase.execute(
+                CreateMemoryMarbleUseCase.Definition(
+                    memberId = memberId,
+                    feelings = feelings,
+                    content = content,
+                ),
             )
-        )
 
         updateFeelingsConnectMemoryMarbleUseCase.execute(
             UpdateFeelingsConnectMemoryMarbleUseCase.Command(
                 memoryMarbleId = memoryMarble.id,
                 feelings = feelings,
-            )
+            ),
         )
 
         return memoryMarble

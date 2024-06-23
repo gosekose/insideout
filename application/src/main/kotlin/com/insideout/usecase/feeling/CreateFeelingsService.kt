@@ -13,14 +13,15 @@ class CreateFeelingsService(
     override fun execute(definition: CreateFeelingsUseCase.Definition): Feelings {
         val (memberId, feelingDefinitions) = definition
 
-        val feelings = feelingDefinitions.map {
-            Feeling(
-                memberId = memberId,
-                score = it.score,
-                type = it.type,
-                memoryMarbleConnect = FeelingMemoryMarbleConnect.DisConnectMemoryMarble
-            )
-        }.let(::Feelings)
+        val feelings =
+            feelingDefinitions.map {
+                Feeling(
+                    memberId = memberId,
+                    score = it.score,
+                    type = it.type,
+                    memoryMarbleConnect = FeelingMemoryMarbleConnect.DisConnectMemoryMarble,
+                )
+            }.let(::Feelings)
 
         return feelingSaver.saveAll(feelings)
     }

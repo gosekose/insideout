@@ -9,7 +9,7 @@ sealed class FeelingMemoryMarbleConnect {
 
         fun connect(memoryMarbleId: Long): ConnectMemoryMarble {
             return ConnectMemoryMarble(
-                memoryMarbleId = memoryMarbleId
+                memoryMarbleId = memoryMarbleId,
             )
         }
     }

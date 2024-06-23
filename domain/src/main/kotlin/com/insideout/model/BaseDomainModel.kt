@@ -13,3 +13,8 @@ abstract class BaseDomainModel {
     val isInitializedLastModifiedAt: Boolean
         get() = ::lastModifiedAt.isInitialized
 }
+
+// TODO
+fun <T : BaseDomainModel> T?.notnull(): T {
+    return this ?: throw IllegalArgumentException()
+}

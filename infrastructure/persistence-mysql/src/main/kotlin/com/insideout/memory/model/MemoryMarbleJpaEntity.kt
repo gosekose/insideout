@@ -32,7 +32,7 @@ class MemoryMarbleJpaEntity(
     val storeType: StoreType,
     @Enumerated
     @Column(name = "status", columnDefinition = "varchar(32)", nullable = false)
-    val softDeleteStatus: SoftDeleteStatus,
+    var softDeleteStatus: SoftDeleteStatus,
 ) : BaseJpaEntity() {
     fun toModel(feelings: Feelings): MemoryMarble {
         return MemoryMarble(
@@ -42,6 +42,12 @@ class MemoryMarbleJpaEntity(
             content = content.toModel(),
             storeType = storeType,
         ).applyWithEntity(this)
+    }
+
+    fun remove(): MemoryMarbleJpaEntity {
+        return this.apply {
+            this.softDeleteStatus = SoftDeleteStatus.INACTIVE
+        }
     }
 
     companion object {

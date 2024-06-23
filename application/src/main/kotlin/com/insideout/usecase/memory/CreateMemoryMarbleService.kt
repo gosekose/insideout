@@ -17,8 +17,8 @@ class CreateMemoryMarbleService(
                 memberId = memberId,
                 feelings = feelings,
                 content = content,
-                storeType = StoreType.DAILY
-            )
+                storeType = StoreType.DAILY,
+            ),
         )
     }
 }

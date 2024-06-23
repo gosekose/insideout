@@ -14,7 +14,7 @@ class RedefineMemoryMarbleService(
             memoryMarble.update(
                 feelings = feelings,
                 content = content,
-            )
+            ),
         )
     }
 }

@@ -8,6 +8,6 @@ interface UpdateMemoryMarbleStoreTypeUseCase {
 
     data class Command(
         val id: Long,
-        val storyType: StoreType,
+        val storeType: StoreType,
     )
 }

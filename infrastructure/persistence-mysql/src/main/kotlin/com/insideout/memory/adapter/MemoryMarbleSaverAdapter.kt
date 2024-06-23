@@ -5,9 +5,9 @@ import com.insideout.memory.model.MemoryMarbleJpaEntity
 import com.insideout.memory.repository.MemoryMarbleJpaRepository
 import com.insideout.model.memory.MemoryMarble
 import com.insideout.usecase.memory.port.MemoryMarbleSaver
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Repository
 
-@Component
+@Repository
 @WritableTransactional
 class MemoryMarbleSaverAdapter(
     private val memoryMarbleJpaRepository: MemoryMarbleJpaRepository,
