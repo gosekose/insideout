@@ -2,22 +2,15 @@ package com.insideout.base
 
 import com.insideout.model.BaseDomainModel
 import jakarta.persistence.Column
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
 import java.time.Instant
 
 @MappedSuperclass
 abstract class BaseJpaEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    open val id: Long = 0L
-
-    @Column(name = "createdAt", columnDefinition = "datetime(6)", updatable = false, nullable = false)
+    @Column(name = "created_at", columnDefinition = "datetime(6)", updatable = false, nullable = false)
     var createdAt: Instant = Instant.now()
 
-    @Column(name = "lastModifiedAt", columnDefinition = "datetime(6)", nullable = false)
+    @Column(name = "last_modified_at", columnDefinition = "datetime(6)", nullable = false)
     var lastModifiedAt: Instant = Instant.now()
 }
 

@@ -15,6 +15,9 @@ import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
 
@@ -22,20 +25,23 @@ import jakarta.persistence.Table
 @Table(
     name = "feeling",
     indexes = [
-        Index(name = "idx_feeling__createdAt", columnList = "createdAt"),
-        Index(name = "idx_feeling__memoryMarbleId", columnList = "memoryMarbleId"),
-        Index(name = "idx_feeling__memberId", columnList = "memberId"),
+        Index(name = "idx_feeling__created_at", columnList = "created_at"),
+        Index(name = "idx_feeling__memory_marble_id", columnList = "memory_marble_id"),
+        Index(name = "idx_feeling__member_id", columnList = "member_id"),
     ],
 )
 class FeelingJpaEntity(
-    @Column(name = "memberId", columnDefinition = "bigint", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long,
+    @Column(name = "member_id", columnDefinition = "bigint", nullable = false)
     val memberId: Long,
     @Column(name = "score", columnDefinition = "bigint", nullable = false)
     var score: Long,
     @Enumerated(value = EnumType.STRING)
     @Column(name = "type", columnDefinition = "varchar(64)", nullable = false)
     var type: FeelingType,
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "status", columnDefinition = "varchar(32)", nullable = false)
     var softDeleteStatus: SoftDeleteStatus,
     @Embedded
@@ -102,6 +108,7 @@ class FeelingJpaEntity(
 
             return with(feeling) {
                 FeelingJpaEntity(
+                    id = id,
                     memberId = memberId,
                     score = score,
                     type = type,

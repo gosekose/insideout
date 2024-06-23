@@ -1,12 +1,12 @@
 package com.insideout.memory.repository
 
-import com.insideout.base.BaseJpaRepository
 import com.insideout.memory.model.MemoryMarbleJpaEntity
 import com.insideout.memory.model.QMemoryMarbleJpaEntity
 import com.insideout.model.memory.type.StoreType
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface MemoryMarbleJpaRepository : BaseJpaRepository<MemoryMarbleJpaEntity, Long>, MemoryMarbleJpaCustom {
+interface MemoryMarbleJpaRepository : JpaRepository<MemoryMarbleJpaEntity, Long>, MemoryMarbleJpaCustom {
     fun existsByIdGreaterThan(id: Long): Boolean
 }
 

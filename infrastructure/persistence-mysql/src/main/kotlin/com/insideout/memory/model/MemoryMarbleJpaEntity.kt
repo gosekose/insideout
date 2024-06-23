@@ -15,6 +15,9 @@ import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
 
@@ -22,22 +25,25 @@ import jakarta.persistence.Table
 @Table(
     name = "memory_marble",
     indexes = [
-        Index(name = "idx_memory_marble__createdAt", columnList = "createdAt"),
-        Index(name = "idx_memory_marble__memberId_storeType", columnList = "memberId, storeType"),
+        Index(name = "idx_memory_marble__created_at", columnList = "created_at"),
+        Index(name = "idx_memory_marble__member_id_store_type", columnList = "member_id, store_type"),
     ],
 )
 class MemoryMarbleJpaEntity(
-    @Column(name = "memberId", columnDefinition = "bigint", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long,
+    @Column(name = "member_id", columnDefinition = "bigint", nullable = false)
     val memberId: Long,
     @Embedded
     val content: MemoryMarbleContentJpaModel,
-    @Column(name = "feelingIds", columnDefinition = "varchar(255)", nullable = false)
+    @Column(name = "feeling_ids", columnDefinition = "varchar(255)", nullable = false)
     @Convert(converter = ListLongToStringConverter::class)
     val feelingIds: List<Long> = mutableListOf(),
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "storeType", columnDefinition = "varchar(32)", nullable = false)
+    @Column(name = "store_type", columnDefinition = "varchar(32)", nullable = false)
     val storeType: StoreType,
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "status", columnDefinition = "varchar(32)", nullable = false)
     var softDeleteStatus: SoftDeleteStatus,
 ) : BaseJpaEntity() {
@@ -62,6 +68,7 @@ class MemoryMarbleJpaEntity(
         fun from(memoryMarble: MemoryMarble): MemoryMarbleJpaEntity {
             return with(memoryMarble) {
                 MemoryMarbleJpaEntity(
+                    id = id,
                     memberId = memberId,
                     content = MemoryMarbleContentJpaModel.from(memoryMarbleContent),
                     feelingIds = feelings.map { it.id },
