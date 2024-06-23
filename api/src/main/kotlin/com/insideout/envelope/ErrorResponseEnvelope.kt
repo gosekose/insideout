@@ -1,4 +1,4 @@
-package com.insideout.v1.envelope
+package com.insideout.envelope
 
 data class ErrorResponseEnvelope(
     override val body: Body,

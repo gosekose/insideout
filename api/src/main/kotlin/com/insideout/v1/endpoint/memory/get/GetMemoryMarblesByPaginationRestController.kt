@@ -6,8 +6,11 @@ import com.insideout.model.page.Pagination
 import com.insideout.usecase.memory.GetMemoryMarblesByPaginationUseCase
 import com.insideout.v1.endpoint.objectField.MemoryMarbleHttpResponse
 import com.insideout.v1.endpoint.paginationField.PaginationHttpResponse
+import com.insideout.v1.endpoint.paginationField.PaginationRequestParam
+import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -22,19 +25,20 @@ class GetMemoryMarblesByPaginationRestController(
     )
     fun getMemoryMarblesByPagination(
         @RequestHeader memberId: Long,
-        @RequestParam size: Long = 10L,
         @RequestParam storeType: StoreType? = null,
-        @RequestParam lastId: Long = 0L,
+        @ModelAttribute @Valid paginationRequestParam: PaginationRequestParam,
     ): MemoryMarblesPaginationHttpResponse {
         return getMemoryMarblesByPaginationUseCase.execute(
             GetMemoryMarblesByPaginationUseCase.Query(
                 memberId = memberId,
                 storeType = storeType,
                 offsetSearch =
-                    GetMemoryMarblesByPaginationUseCase.Query.OffsetSearch(
-                        size = size,
-                        lastId = lastId,
-                    ),
+                    with(paginationRequestParam) {
+                        GetMemoryMarblesByPaginationUseCase.Query.OffsetSearch(
+                            size = size,
+                            lastId = lastId,
+                        )
+                    },
             ),
         ).let(MemoryMarblesPaginationHttpResponse.Companion::from)
     }
