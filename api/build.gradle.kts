@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     kotlin("kapt") version "1.9.21"
     kotlin("plugin.noarg") version "1.8.21"
@@ -13,11 +15,21 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
+    testImplementation("com.h2database:h2")
+
     implementation(project(":lib"))
     implementation(project(":domain"))
     implementation(project(":infrastructure"))
     implementation(project(":infrastructure:persistence-mysql"))
     implementation(project(":application"))
+}
+
+tasks.withType<BootJar> {
+    enabled = true
+}
+
+tasks.withType<Jar> {
+    enabled = true
 }
 
 noArg {

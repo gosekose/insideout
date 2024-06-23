@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.springframework.boot") version "3.3.0" apply false
@@ -51,9 +52,8 @@ subprojects {
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.springframework.boot:spring-boot-starter")
-        testImplementation("org.springframework.boot:spring-boot-starter-test")
-        implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     }
@@ -62,6 +62,14 @@ subprojects {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
+
+    tasks.withType<BootJar> {
+        enabled = false
+    }
+
+    tasks.withType<Jar> {
+        enabled = true
+    }
 }
 
 tasks.withType<KotlinCompile> {
@@ -69,4 +77,8 @@ tasks.withType<KotlinCompile> {
         jvmTarget = "17"
         freeCompilerArgs += "-Xjsr305=strict"
     }
+}
+
+tasks.withType<BootJar> {
+    mainClass = "com.insideout.ApiApplicationKt"
 }
