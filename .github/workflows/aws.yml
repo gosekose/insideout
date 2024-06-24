@@ -9,7 +9,6 @@ env:
   ECR_REPOSITORY: insideout
   ECS_SERVICE: insideout-production-service
   ECS_CLUSTER: insideout
-  ECS_TASK_DEFINITION: ecs-task-definition.json
   ECS_TASK_FAMILY: insideout
   CONTAINER_NAME: insideout
 
