@@ -4,3 +4,35 @@ POST {{baseUrl}}/api/v1/login
 Content-Type: application/json
 Accept: */*
 Connection: keep-alive
+
+### 2. 헤더 로그인 실패
+
+POST {{baseUrl}}/api/v1/login
+Content-Type: application/json
+Authorization: Bearer test
+Accept: */*
+Connection: keep-alive
+
+### 3. 헤더 로그인 성공
+
+POST {{baseUrl}}/api/v1/login
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMyIsImV4cCI6MTc1MDMwNTc2MX0.1NoFIBLNN2rZu4b7fU2r1QVuLsp1s_hWSI5jI7irJHlz8U0aWuO9T6KLq48fI7RiJOAVT0wE98J8_shmiqxpsQ
+Accept: */*
+Connection: keep-alive
+
+### 4. 테스트 성공
+
+GET {{baseUrl}}/api/v1/test
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMyIsImV4cCI6MTc1MDMwNTc2MX0.1NoFIBLNN2rZu4b7fU2r1QVuLsp1s_hWSI5jI7irJHlz8U0aWuO9T6KLq48fI7RiJOAVT0wE98J8_shmiqxpsQ
+Accept: */*
+Connection: keep-alive
+
+### 5. 테스트 실패
+
+GET {{baseUrl}}/api/v1/test
+Content-Type: application/json
+Authorization: Bearer test
+Accept: */*
+Connection: keep-alive

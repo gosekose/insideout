@@ -1,7 +1,8 @@
-package com.insideout.security
+package com.insideout.security.filter
 
 import com.insideout.model.member.model.Member
 import com.insideout.security.authentication.AuthenticationV1Context
+import com.insideout.security.properties.LoginSecretKeyProperties
 import com.insideout.usecase.member.CreateMemberUseCase
 import com.insideout.usecase.member.GetMemberUseCase
 import com.insideout.usecase.member.port.TokenPort

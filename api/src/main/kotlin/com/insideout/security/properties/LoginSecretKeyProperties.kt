@@ -1,4 +1,4 @@
-package com.insideout.security
+package com.insideout.security.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

@@ -1,4 +1,4 @@
-package com.insideout.security
+package com.insideout.security.filter
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse

@@ -3,6 +3,9 @@ package com.insideout.security
 import com.insideout.security.authentication.CustomAuthenticationProvider
 import com.insideout.security.authentication.CustomUserDetailsService
 import com.insideout.security.authentication.WebMvcCustomAuthenticationSuccessHandler
+import com.insideout.security.filter.AuthorizationToMemberFilter
+import com.insideout.security.filter.LoginV1AuthenticationFilter
+import com.insideout.security.properties.LoginSecretKeyProperties
 import com.insideout.usecase.member.CreateMemberUseCase
 import com.insideout.usecase.member.GetMemberUseCase
 import com.insideout.usecase.member.port.TokenPort
@@ -57,6 +60,10 @@ class SecurityConfiguration(
                 corsFilter(),
                 UsernamePasswordAuthenticationFilter::class.java,
             )
+            .addFilterBefore(
+                authorizationToMemberFilter(),
+                UsernamePasswordAuthenticationFilter::class.java,
+            )
             .exceptionHandling { it.authenticationEntryPoint(entryPoint) }
             .authorizeHttpRequests {
                 it.requestMatchers(
@@ -64,6 +71,7 @@ class SecurityConfiguration(
                     AntPathRequestMatcher("/error"),
                     AntPathRequestMatcher("/api/**/login"),
                 ).permitAll()
+                it.anyRequest().authenticated()
             }
             .build()
     }
@@ -114,6 +122,15 @@ class SecurityConfiguration(
             }
 
         return CorsFilter(source)
+    }
+
+    @Bean
+    fun authorizationToMemberFilter(): AuthorizationToMemberFilter {
+        return AuthorizationToMemberFilter(
+            tokenPort = tokenPort,
+            loginSecretKeyProperties = loginSecretKeyProperties,
+            authenticationManager = authenticationManager(),
+        )
     }
 
     @Bean
