@@ -26,11 +26,6 @@ spring:
         format_sql: true
     show-sql: true
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
   jackson:
     property-naming-strategy: SNAKE_CASE
 
@@ -45,18 +40,13 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: 6379
+    url: ${INSIDEOUT_DB_URL}
+    username: ${INSIDEOUT_DB_USERNAME}
+    password: ${INSIDEOUT_DB_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: none
 
 jwt:
-  secret-key: ${JWT_SECRET_KEY}
+  secret-key: ${INSIDEOUT_JWT_SECRET_KEY}
