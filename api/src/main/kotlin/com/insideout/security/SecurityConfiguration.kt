@@ -5,10 +5,13 @@ import com.insideout.security.authentication.CustomUserDetailsService
 import com.insideout.security.authentication.WebMvcCustomAuthenticationSuccessHandler
 import com.insideout.security.filter.AuthorizationToMemberFilter
 import com.insideout.security.filter.LoginV1AuthenticationFilter
+import com.insideout.security.manager.MemoryMarbleAuthorizationManager
+import com.insideout.security.manager.MemoryMarbleAuthorizationManager.Companion.MEMORY_MARBLE_URI_PATTERN
 import com.insideout.security.properties.LoginSecretKeyProperties
 import com.insideout.usecase.member.CreateMemberUseCase
 import com.insideout.usecase.member.GetMemberUseCase
 import com.insideout.usecase.member.port.TokenPort
+import com.insideout.usecase.memory.IsExistMemoryMarbleOfMemberUseCase
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -43,6 +46,7 @@ class SecurityConfiguration(
     private val getMemberUseCase: GetMemberUseCase,
     private val createMemberUseCase: CreateMemberUseCase,
     private val loginSecretKeyProperties: LoginSecretKeyProperties,
+    private val isExistMemoryMarbleOfMemberUseCase: IsExistMemoryMarbleOfMemberUseCase,
 ) {
     @Order(1)
     @Bean
@@ -71,6 +75,8 @@ class SecurityConfiguration(
                     AntPathRequestMatcher("/error"),
                     AntPathRequestMatcher("/api/**/login"),
                 ).permitAll()
+                it.requestMatchers(AntPathRequestMatcher(MEMORY_MARBLE_URI_PATTERN))
+                    .access(MemoryMarbleAuthorizationManager(isExistMemoryMarbleOfMemberUseCase))
                 it.anyRequest().authenticated()
             }
             .build()
