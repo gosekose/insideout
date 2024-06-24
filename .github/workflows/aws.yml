@@ -9,8 +9,8 @@ env:
   ECR_REPOSITORY: insideout
   ECS_SERVICE: insideout
   ECS_CLUSTER: insideout
-  ECS_TASK_DEFINITION: ecs-task-definition.json # set this to the path to your Amazon ECS task definition
-  CONTAINER_NAME: insideout-container           # set this to the name of the container in the
+  ECS_TASK_DEFINITION: ecs-task-definition.json
+  CONTAINER_NAME: insideout
 
 
 permissions:
