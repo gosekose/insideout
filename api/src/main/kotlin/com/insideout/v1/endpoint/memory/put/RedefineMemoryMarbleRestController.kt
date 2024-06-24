@@ -20,7 +20,6 @@ class RedefineMemoryMarbleRestController(
     @PutMapping(
         value = ["/api/v1/memoryMarbles/{memoryMarbleId}"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun redefineMemoryMarble(
         @RequestHeader memberId: Long,

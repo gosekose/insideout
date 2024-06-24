@@ -24,11 +24,11 @@ class MemoryMarbleReaderAdapter(
     override fun getAll(query: GetMemoryMarblesByPaginationUseCase.Query): MemoryMarbles {
         val memoryMarbleJpaEntities =
             with(query) {
-                memoryMarbleJpaRepository.findByOffsetSearch(
+                memoryMarbleJpaRepository.findByLimitSearch(
                     memberId = memberId,
                     storeType = storeType,
-                    lastId = offsetSearch.lastId,
-                    size = offsetSearch.size,
+                    lastId = limitSearch.lastId,
+                    size = limitSearch.size,
                 )
             }
 

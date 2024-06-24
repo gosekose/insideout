@@ -1,0 +1,103 @@
+### 1. 기억구슬 생성
+
+POST {{baseUrl}}/api/v1/memoryMarbles
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
+Accept: */*
+Connection: keep-alive
+
+{
+  "content": {
+    "description": "기억구슬 테스트"
+  },
+  "feelings": [
+    {
+      "score": 30,
+      "type": "JOY"
+    },
+    {
+      "score": 40,
+      "type": "SADNESS"
+    }
+  ]
+}
+
+### 2. 기억구슬 수정
+
+PUT {{baseUrl}}/api/v1/memoryMarbles/3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
+Accept: */*
+Connection: keep-alive
+
+{
+  "content": {
+    "description": "기억구슬 테스트"
+  },
+  "feelingsDefinition": [
+    {
+      "score": 20,
+      "type": "ANGER"
+    },
+    {
+      "score": 60,
+      "type": "DISGUST"
+    },
+    {
+      "score": 10,
+      "type": "FEAR"
+    }
+  ],
+  "feelingsRedefinition": [
+    {
+      "id": 5,
+      "score": 30,
+      "type": "JOY"
+    },
+    {
+      "id": 6,
+      "score": 40,
+      "type": "SADNESS"
+    }
+  ]
+}
+
+### 3. 기억구슬 삭제
+
+DELETE {{baseUrl}}/api/v1/memoryMarbles/3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
+Accept: */*
+Connection: keep-alive
+
+### 4. 기억구슬 목록 조회
+GET {{baseUrl}}/api/v1/memoryMarbles
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
+Accept: */*
+Connection: keep-alive
+
+### 5. 기억구슬 목록 조회 - storeType
+GET {{baseUrl}}/api/v1/memoryMarbles?storeType=DISCARD
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
+Accept: */*
+Connection: keep-alive
+
+### 6. 기억구슬 조회
+GET {{baseUrl}}/api/v1/memoryMarbles/5
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
+Accept: */*
+Connection: keep-alive
+
+### 7. 기억구슬 구슬 변경
+PUT {{baseUrl}}/api/v1/memoryMarbles/5/storeTypes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
+Accept: */*
+Connection: keep-alive
+
+{
+  "storeType": "DISCARD"
+}

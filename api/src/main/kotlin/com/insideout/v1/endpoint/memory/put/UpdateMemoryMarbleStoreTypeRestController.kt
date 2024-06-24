@@ -17,7 +17,6 @@ class UpdateMemoryMarbleStoreTypeRestController(
     @PutMapping(
         value = ["/api/v1/memoryMarbles/{memoryMarbleId}/storeTypes"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun updateMemoryMarbleStoreType(
         @RequestHeader memberId: Long,

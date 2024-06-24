@@ -32,9 +32,9 @@ class GetMemoryMarblesByPaginationRestController(
             GetMemoryMarblesByPaginationUseCase.Query(
                 memberId = memberId,
                 storeType = storeType,
-                offsetSearch =
+                limitSearch =
                     with(paginationRequestParam) {
-                        GetMemoryMarblesByPaginationUseCase.Query.OffsetSearch(
+                        GetMemoryMarblesByPaginationUseCase.Query.LimitSearch(
                             size = size,
                             lastId = lastId,
                         )

@@ -17,22 +17,6 @@ Connection: keep-alive
 
 POST {{baseUrl}}/api/v1/login
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMyIsImV4cCI6MTc1MDMwNTc2MX0.1NoFIBLNN2rZu4b7fU2r1QVuLsp1s_hWSI5jI7irJHlz8U0aWuO9T6KLq48fI7RiJOAVT0wE98J8_shmiqxpsQ
-Accept: */*
-Connection: keep-alive
-
-### 4. 테스트 성공
-
-GET {{baseUrl}}/api/v1/test
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMyIsImV4cCI6MTc1MDMwNTc2MX0.1NoFIBLNN2rZu4b7fU2r1QVuLsp1s_hWSI5jI7irJHlz8U0aWuO9T6KLq48fI7RiJOAVT0wE98J8_shmiqxpsQ
-Accept: */*
-Connection: keep-alive
-
-### 5. 테스트 실패
-
-GET {{baseUrl}}/api/v1/test
-Content-Type: application/json
-Authorization: Bearer test
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
 Accept: */*
 Connection: keep-alive

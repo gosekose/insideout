@@ -18,7 +18,6 @@ class CreateMemoryMarbleRestController(
     @PostMapping(
         value = ["/api/v1/memoryMarbles"],
         produces = [MediaType.APPLICATION_JSON_VALUE],
-        consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun createMemoryMarble(
         @RequestHeader memberId: Long,
@@ -29,14 +28,14 @@ class CreateMemoryMarbleRestController(
     }
 
     data class HttpRequest(
-        val content: String,
+        val content: MemoryMarbleContent,
         val feelings: List<FeelingDefinitionHttpField>,
     ) {
         fun toAggregateDefinition(memberId: Long): CreateFeelingAndMemoryMarbleAggregate.Definition {
             return CreateFeelingAndMemoryMarbleAggregate.Definition(
                 memberId = memberId,
                 feelingDefinitions = feelings.map { it.toFeelingDefinition() },
-                memoryMarbleContent = MemoryMarbleContent(content),
+                memoryMarbleContent = MemoryMarbleContent(content.description),
             )
         }
 

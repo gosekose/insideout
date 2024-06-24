@@ -1,5 +1,6 @@
 package com.insideout.memory.repository
 
+import com.insideout.base.SoftDeleteStatus
 import com.insideout.memory.model.MemoryMarbleJpaEntity
 import com.insideout.memory.model.QMemoryMarbleJpaEntity
 import com.insideout.model.memory.type.StoreType
@@ -13,7 +14,7 @@ interface MemoryMarbleJpaRepository : JpaRepository<MemoryMarbleJpaEntity, Long>
 }
 
 interface MemoryMarbleJpaCustom {
-    fun findByOffsetSearch(
+    fun findByLimitSearch(
         memberId: Long,
         storeType: StoreType?,
         lastId: Long,
@@ -26,7 +27,7 @@ class MemoryMarbleJpaCustomImpl(
 ) : MemoryMarbleJpaCustom {
     private val qMemoryMarbleJpaEntity = QMemoryMarbleJpaEntity.memoryMarbleJpaEntity
 
-    override fun findByOffsetSearch(
+    override fun findByLimitSearch(
         memberId: Long,
         storeType: StoreType?,
         lastId: Long,
@@ -35,12 +36,13 @@ class MemoryMarbleJpaCustomImpl(
         return jpaQueryFactory.selectFrom(qMemoryMarbleJpaEntity)
             .where(
                 qMemoryMarbleJpaEntity.memberId.eq(memberId),
+                qMemoryMarbleJpaEntity.id.gt(lastId),
                 storeType?.let {
                     qMemoryMarbleJpaEntity.storeType.eq(storeType)
                 },
-                qMemoryMarbleJpaEntity.id.gt(lastId),
+                qMemoryMarbleJpaEntity.softDeleteStatus.eq(SoftDeleteStatus.ACTIVE),
             )
-            .offset(size)
+            .limit(size)
             .orderBy(qMemoryMarbleJpaEntity.id.asc())
             .fetch()
     }
