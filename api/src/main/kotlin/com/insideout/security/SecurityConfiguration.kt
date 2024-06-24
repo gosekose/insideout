@@ -74,6 +74,7 @@ class SecurityConfiguration(
                     CorsUtils::isPreFlightRequest,
                     AntPathRequestMatcher("/error"),
                     AntPathRequestMatcher("/api/**/login"),
+                    AntPathRequestMatcher("/api/**/health"),
                 ).permitAll()
                 it.requestMatchers(AntPathRequestMatcher(MEMORY_MARBLE_URI_PATTERN))
                     .access(MemoryMarbleAuthorizationManager(isExistMemoryMarbleOfMemberUseCase))
@@ -107,10 +108,7 @@ class SecurityConfiguration(
     fun corsFilter(): CorsFilter {
         val configuration =
             CorsConfiguration().apply {
-                allowedOriginPatterns =
-                    listOf(
-                        "http://localhost:3000",
-                    )
+                allowedOriginPatterns = listOf("*")
                 allowedMethods = HttpMethod.values().map { it.name() }.toList()
                 allowedHeaders =
                     listOf(
@@ -121,7 +119,6 @@ class SecurityConfiguration(
                     )
                 allowCredentials = true
             }
-
         val source =
             UrlBasedCorsConfigurationSource().apply {
                 registerCorsConfiguration("/**", configuration)

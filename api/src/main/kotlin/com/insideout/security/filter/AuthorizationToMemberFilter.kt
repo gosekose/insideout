@@ -31,6 +31,7 @@ class AuthorizationToMemberFilter(
         listOf(
             "/error",
             "/api/**/login",
+            "/api/**/health",
         )
 
     override fun afterPropertiesSet() {

@@ -20,3 +20,10 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxOSIsImV4cCI6MTc1MDMxNDM1OX0.LoU8qGSoqqfb5qA4wL-lAmbf0Zd4X9vZU1_ItZ2HC8fDMY5svNMY1_wGyWq33qRme7ao8Sjk0py61bGiaP7Nfw
 Accept: */*
 Connection: keep-alive
+
+### 4. 헬스체크
+
+GET {{baseUrl}}/api/v1/health
+Content-Type: application/json
+Accept: */*
+Connection: keep-alive
