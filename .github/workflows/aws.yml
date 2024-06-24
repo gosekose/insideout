@@ -7,9 +7,10 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: insideout
-  ECS_SERVICE: insideout
+  ECS_SERVICE: insideout-production-service
   ECS_CLUSTER: insideout
   ECS_TASK_DEFINITION: ecs-task-definition.json
+  ECS_TASK_FAMILY: insideout
   CONTAINER_NAME: insideout
 
 
@@ -54,23 +55,48 @@ jobs:
         env:
           ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
           IMAGE_TAG: ${{ github.sha }}
+          INSIDEOUT_DB_URL: ${{ secrets.INSIDEOUT_DB_URL }}
+          INSIDEOUT_DB_USERNAME: ${{ secrets.INSIDEOUT_DB_USERNAME }}
+          INSIDEOUT_DB_PASSWORD: ${{ secrets.INSIDEOUT_DB_PASSWORD }}
+          INSIDEOUT_JWT_SECRET_KEY: ${{ secrets.INSIDEOUT_JWT_SECRET_KEY }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f app.Dockerfile .
+          docker build \
+            --build-arg INSIDEOUT_DB_URL=${{ secrets.INSIDEOUT_DB_URL }} \
+            --build-arg INSIDEOUT_DB_USERNAME=${{ secrets.INSIDEOUT_DB_USERNAME }} \
+            --build-arg INSIDEOUT_DB_PASSWORD=${{ secrets.INSIDEOUT_DB_PASSWORD }} \
+            --build-arg INSIDEOUT_JWT_SECRET_KEY=${{ secrets.INSIDEOUT_JWT_SECRET_KEY }} \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f app.Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-#      - name: Fill in the new image ID in the Amazon ECS task definition
-#        id: task-def
-#        uses: aws-actions/amazon-ecs-render-task-definition@v1
-#        with:
-#          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-#          container-name: ${{ env.CONTAINER_NAME }}
-#          image: ${{ steps.build-image.outputs.image }}
-#
-#      - name: Deploy Amazon ECS task definition
-#        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#        with:
-#          task-definition: ${{ steps.task-def.outputs.task-definition }}
-#          service: ${{ env.ECS_SERVICE }}
-#          cluster: ${{ env.ECS_CLUSTER }}
-#          wait-for-service-stability: true
+      - name: Update ECS Task Definition with New Image
+        id: update-task-def
+        run: |
+          # Retrieve the current task definition
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_FAMILY }} --query 'taskDefinition')
+          
+          # Update the task definition with the new image and remove unnecessary fields
+          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" '
+            .containerDefinitions[0].image = $IMAGE |
+            del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)
+          ')
+          
+          # Register the new task definition directly using the updated JSON string
+          aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEF"
+      
+
+      #      - name: Fill in the new image ID in the Amazon ECS task definition
+      #        id: task-def
+      #        uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #        with:
+      #          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+      #          container-name: ${{ env.CONTAINER_NAME }}
+      #          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_FAMILY }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
