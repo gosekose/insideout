@@ -32,8 +32,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Tests and Build
+        run: ./gradlew build --info
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
