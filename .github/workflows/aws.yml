@@ -71,17 +71,20 @@ jobs:
       - name: Update ECS Task Definition with New Image
         id: update-task-def
         run: |
-          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_FAMILY }} --query 'taskDefinition')
+          echo "Fetching current task definition..."
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_FAMILY }} --query 'taskDefinition' --output json)
+          echo "Current task definition: $TASK_DEFINITION"
           
-          # Update the task definition with the new image and remove unnecessary fields
+          echo "Updating task definition with new image..."
           NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" '
             .containerDefinitions[0].image = $IMAGE |
             del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)
           ')
+          echo "New task definition: $NEW_TASK_DEF"
           
-          # Register the new task definition directly using the updated JSON string
           echo "$NEW_TASK_DEF" > new-task-def.json
           REGISTERED_TASK_DEF=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json)
+          echo "Registered task definition: $REGISTERED_TASK_DEF"
           TASK_DEF_ARN=$(echo $REGISTERED_TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn')
           echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
