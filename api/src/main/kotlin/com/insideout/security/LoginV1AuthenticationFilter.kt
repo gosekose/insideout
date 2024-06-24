@@ -1,8 +1,9 @@
 package com.insideout.security
 
 import com.insideout.model.member.model.Member
-import com.insideout.usecase.member.CreateMemberV1UseCase
-import com.insideout.usecase.member.GetMemberV1UseCase
+import com.insideout.security.authentication.AuthenticationV1Context
+import com.insideout.usecase.member.CreateMemberUseCase
+import com.insideout.usecase.member.GetMemberUseCase
 import com.insideout.usecase.member.port.TokenPort
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
@@ -20,12 +21,16 @@ import javax.crypto.SecretKey
 @EnableConfigurationProperties(LoginSecretKeyProperties::class)
 class LoginV1AuthenticationFilter(
     private val tokenPort: TokenPort,
-    private val getMemberV1UseCase: GetMemberV1UseCase,
-    private val createMemberV1UseCase: CreateMemberV1UseCase,
+    private val getMemberUseCase: GetMemberUseCase,
+    private val createMemberUseCase: CreateMemberUseCase,
     private val loginSecretKeyProperties: LoginSecretKeyProperties,
     authenticationManager: AuthenticationManager,
-) : AbstractAuthenticationProcessingFilter(AntPathRequestMatcher("/api/v1/login")) {
+) : AbstractAuthenticationProcessingFilter(AntPathRequestMatcher("/api/v1/login", "POST")) {
     private lateinit var key: SecretKey
+
+    init {
+        super.setAuthenticationManager(authenticationManager)
+    }
 
     override fun afterPropertiesSet() {
         super.afterPropertiesSet()
@@ -45,14 +50,15 @@ class LoginV1AuthenticationFilter(
                 handleExistingLogin(token, response)
             }
 
-        val authenticationToken = UsernamePasswordAuthenticationToken(member, null)
+        val authenticationToken = UsernamePasswordAuthenticationToken(AuthenticationV1Context.from(member), null)
+
         return authenticationManager.authenticate(authenticationToken).also {
             SecurityContextHolder.getContext().authentication = it
         }
     }
 
     private fun handleNewLogin(response: HttpServletResponse): Member {
-        return createMemberV1UseCase.execute().also {
+        return createMemberUseCase.execute().also {
             val newToken =
                 tokenPort.create(
                     subject = it.id.toString(),
@@ -74,7 +80,7 @@ class LoginV1AuthenticationFilter(
                 converter = { it.toLong() },
             )
         return runCatching {
-            getMemberV1UseCase.execute(memberId).also {
+            getMemberUseCase.execute(memberId).also {
                 setAuthorizationHeader(response, token)
             }
         }.getOrElse {

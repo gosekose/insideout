@@ -1,7 +1,10 @@
 package com.insideout.security
 
-import com.insideout.usecase.member.CreateMemberV1UseCase
-import com.insideout.usecase.member.GetMemberV1UseCase
+import com.insideout.security.authentication.CustomAuthenticationProvider
+import com.insideout.security.authentication.CustomUserDetailsService
+import com.insideout.security.authentication.WebMvcCustomAuthenticationSuccessHandler
+import com.insideout.usecase.member.CreateMemberUseCase
+import com.insideout.usecase.member.GetMemberUseCase
 import com.insideout.usecase.member.port.TokenPort
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
@@ -10,13 +13,15 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.context.DelegatingSecurityContextRepository
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository
@@ -32,8 +37,8 @@ import org.springframework.web.filter.CorsFilter
 @EnableConfigurationProperties(LoginSecretKeyProperties::class)
 class SecurityConfiguration(
     private val tokenPort: TokenPort,
-    private val getMemberV1UseCase: GetMemberV1UseCase,
-    private val createMemberV1UseCase: CreateMemberV1UseCase,
+    private val getMemberUseCase: GetMemberUseCase,
+    private val createMemberUseCase: CreateMemberUseCase,
     private val loginSecretKeyProperties: LoginSecretKeyProperties,
 ) {
     @Order(1)
@@ -57,7 +62,7 @@ class SecurityConfiguration(
                 it.requestMatchers(
                     CorsUtils::isPreFlightRequest,
                     AntPathRequestMatcher("/error"),
-                    AntPathRequestMatcher("/login"),
+                    AntPathRequestMatcher("/api/**/login"),
                 ).permitAll()
             }
             .build()
@@ -76,6 +81,8 @@ class SecurityConfiguration(
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
             .securityContext { it.requireExplicitSave(true) }
+            .authenticationProvider(customAuthenticationProvider())
+            .addFilterBefore(loginV1AuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling { it.authenticationEntryPoint(entryPoint) }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { it.anyRequest().permitAll() }
@@ -110,33 +117,45 @@ class SecurityConfiguration(
     }
 
     @Bean
-    fun loginV1AuthenticationFilter(
-        authenticationManager: AuthenticationManager,
-        delegatingSecurityContextRepository: DelegatingSecurityContextRepository,
-    ): LoginV1AuthenticationFilter {
+    fun loginV1AuthenticationFilter(): LoginV1AuthenticationFilter {
         val filter =
             LoginV1AuthenticationFilter(
                 tokenPort = tokenPort,
-                getMemberV1UseCase = getMemberV1UseCase,
-                createMemberV1UseCase = createMemberV1UseCase,
+                getMemberUseCase = getMemberUseCase,
+                createMemberUseCase = createMemberUseCase,
                 loginSecretKeyProperties = loginSecretKeyProperties,
-                authenticationManager = authenticationManager,
+                authenticationManager = authenticationManager(),
             )
 
-        filter.setAuthenticationManager(authenticationManager)
-        filter.setSecurityContextRepository(delegatingSecurityContextRepository)
+        filter.setAuthenticationManager(authenticationManager())
+        filter.setSecurityContextRepository(delegateSecurityContextRepository())
+        filter.setAuthenticationSuccessHandler(webMvcCustomAuthenticationSuccessHandler())
         return filter
     }
 
-    @Bean
-    fun authenticationManager(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
-        return authenticationConfiguration.authenticationManager
+    fun authenticationManager(): AuthenticationManager {
+        return AuthenticationManager { authentication ->
+            customAuthenticationProvider().authenticate(authentication)
+        }
     }
 
-    @Bean
+    fun customAuthenticationProvider(): AuthenticationProvider {
+        return CustomAuthenticationProvider(
+            userDetailsService = customUserDetailsService(),
+        )
+    }
+
+    fun customUserDetailsService(): UserDetailsService {
+        return CustomUserDetailsService()
+    }
+
     fun delegateSecurityContextRepository(): DelegatingSecurityContextRepository {
         return DelegatingSecurityContextRepository(
             RequestAttributeSecurityContextRepository(),
         )
+    }
+
+    fun webMvcCustomAuthenticationSuccessHandler(): AuthenticationSuccessHandler {
+        return WebMvcCustomAuthenticationSuccessHandler()
     }
 }

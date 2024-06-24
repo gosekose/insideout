@@ -19,6 +19,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
+    implementation("com.google.code.gson:gson:2.8.9")
 
     testImplementation("com.h2database:h2")
 

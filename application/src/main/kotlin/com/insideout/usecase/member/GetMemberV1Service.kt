@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 class GetMemberV1Service(
     private val memberReader: MemberReader,
-) : GetMemberV1UseCase {
+) : GetMemberUseCase {
     override fun execute(id: Long): Member {
         return memberReader.getByIdOrNull(id).notnull()
     }
