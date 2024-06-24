@@ -9,7 +9,7 @@ class HealthCheckController {
     private val logger = LoggerFactory.getLogger(HealthCheckController::class.java)
 
     @GetMapping(
-        value = ["/api/v1/health"]
+        value = ["/api/v1/health"],
     )
     fun check() {
         logger.info("Health Check Finished")
