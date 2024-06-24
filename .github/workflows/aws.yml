@@ -6,9 +6,9 @@ on:
 
 env:
   AWS_REGION: ap-northeast-2
-  ECR_REPOSITORY: insideout_repository
-  ECS_SERVICE: insideout_service                 # set this to your Amazon ECS service name
-  ECS_CLUSTER: insideout_cluster                 # set this to your Amazon ECS cluster name
+  ECR_REPOSITORY: insideout
+  ECS_SERVICE: insideout
+  ECS_CLUSTER: insideout
   ECS_TASK_DEFINITION: ecs-task-definition.json # set this to the path to your Amazon ECS task definition
   CONTAINER_NAME: insideout-container           # set this to the name of the container in the
 
