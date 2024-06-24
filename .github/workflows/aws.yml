@@ -71,19 +71,15 @@ jobs:
       - name: Update ECS Task Definition with New Image
         id: update-task-def
         run: |
-          # Retrieve the current task definition
           TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_FAMILY }} --query 'taskDefinition' --output json)
           
-          # Update the task definition with the new image and remove unnecessary fields
           NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" '
-            .containerDefinitions[0].image = $IMAGE |
-            del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)
+          .containerDefinitions[0].image = $IMAGE |
+          del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)
           ')
           
-          # Register the new task definition directly using the updated JSON string
           REGISTERED_TASK_DEF=$(aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEF")
-          TASK_DEF_ARN=$(echo $REGISTERED_TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn')
-          echo "TASK_DEF_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
+          echo "TASK_DEF_ARN=$(echo $REGISTERED_TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
