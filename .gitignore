@@ -5,11 +5,16 @@ HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
 !**/src/main/**/build/
 !**/src/test/**/build/
 
 # Exclude all gradle folders within submodules
+# 하지만 루트 디렉토리의 gradle/wrapper/ 폴더는 포함해야 합니다
 **/gradle/
+!gradle/wrapper/
 
 ### STS ###
 .apt_generated
