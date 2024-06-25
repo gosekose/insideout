@@ -7,5 +7,5 @@ Accept: */*
 Connection: keep-alive
 
 {
-  "email": "ksyn1611@naver.com"
+  "email": "test@naver.com"
 }
