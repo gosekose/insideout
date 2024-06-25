@@ -35,10 +35,11 @@ class MemberJpaEntity(
 ) : BaseJpaEntity() {
     fun toModel(): Member {
         return when (version) {
-            Member.Version.VERSION_V1 -> Member.V1(
-                id = id,
-                email = email?.let(::Email)
-            )
+            Member.Version.VERSION_V1 ->
+                Member.V1(
+                    id = id,
+                    email = email?.let(::Email),
+                )
         }.applyWithEntity(this)
     }
 
@@ -52,7 +53,7 @@ class MemberJpaEntity(
                         MemberJpaEntity(
                             id = id,
                             version = version,
-                            email = memberV1.email?.email
+                            email = memberV1.email?.email,
                         )
                     }
                 }

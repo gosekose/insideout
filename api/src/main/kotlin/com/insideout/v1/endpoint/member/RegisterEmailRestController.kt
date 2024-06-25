@@ -13,7 +13,7 @@ class RegisterEmailRestController(
     private val registerEmailUseCase: RegisterEmailUseCase,
 ) {
     @PutMapping(
-        value = ["/api/v1/profiles/email"]
+        value = ["/api/v1/profiles/email"],
     )
     fun registerEmail(
         @RequestHeader("memberId") memberId: Long,
@@ -29,7 +29,7 @@ class RegisterEmailRestController(
         fun toRegisterEmail(memberId: Long): RegisterEmailUseCase.RegisterEmailCommand {
             return RegisterEmailUseCase.RegisterEmailCommand(
                 memberId = memberId,
-                email = Email(email)
+                email = Email(email),
             )
         }
     }

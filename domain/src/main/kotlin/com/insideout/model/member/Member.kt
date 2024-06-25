@@ -12,6 +12,7 @@ sealed class Member : BaseDomainModel() {
         override var email: Email?,
     ) : Member() {
         override val version: Version = Version.VERSION_V1
+
         fun registerEmail(email: Email) =
             this.apply {
                 this.email = email
