@@ -10,7 +10,7 @@ data class MemberHttpResponse(
         fun from(member: Member): MemberHttpResponse {
             return with(member) {
                 MemberHttpResponse(
-                    email = email?.email
+                    email = email?.email,
                 )
             }
         }

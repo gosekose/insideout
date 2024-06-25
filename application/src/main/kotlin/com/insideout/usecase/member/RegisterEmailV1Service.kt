@@ -21,12 +21,13 @@ class RegisterEmailV1Service(
             throw IllegalArgumentException()
         }
 
-        val toBeMember = when (asIsMember.version) {
-            Member.Version.VERSION_V1 -> {
-                val memberV1 = asIsMember as Member.V1
-                memberV1.registerEmail(email)
+        val toBeMember =
+            when (asIsMember.version) {
+                Member.Version.VERSION_V1 -> {
+                    val memberV1 = asIsMember as Member.V1
+                    memberV1.registerEmail(email)
+                }
             }
-        }
         return memberSaver.save(toBeMember)
     }
 }
