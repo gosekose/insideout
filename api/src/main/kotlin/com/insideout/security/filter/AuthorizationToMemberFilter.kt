@@ -58,7 +58,7 @@ class AuthorizationToMemberFilter(
                 val authorizationHeader = request.getHeader(AUTHORIZATION_HEADER)
                 parseBearer(authorizationHeader)
             } catch (e: Exception) {
-                logger.error { "UnAuthorized Request [URI = ${request.requestURL}, Exception = ${e.message}]" }
+                logger.error("UnAuthorized Request [URI = ${request.requestURL}, Exception = ${e.message}]")
                 throw ApplicationBusinessException(BusinessErrorCause.UNAUTHORIZED)
             }
 
