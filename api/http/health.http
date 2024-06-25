@@ -7,7 +7,7 @@ Connection: keep-alive
 
 ### 3. 테스트
 
-GET {{baseUrl}}/api/v1/test
+GET {{baseUrl}}/api/v1/health
 Content-Type: application/json
 Accept: */*
 Connection: keep-alive
