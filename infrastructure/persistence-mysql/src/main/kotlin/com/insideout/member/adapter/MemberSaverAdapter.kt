@@ -3,7 +3,7 @@ package com.insideout.member.adapter
 import com.insideout.annotation.WritableTransactional
 import com.insideout.member.model.MemberJpaEntity
 import com.insideout.member.repository.MemberJpaRepository
-import com.insideout.model.member.model.Member
+import com.insideout.model.member.Member
 import com.insideout.usecase.member.port.MemberSaver
 import org.springframework.stereotype.Repository
 

@@ -1,6 +1,6 @@
 package com.insideout.security.authentication
 
-import com.insideout.model.member.model.Member
+import com.insideout.model.member.Member
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.io.Serializable
