@@ -1,0 +1,11 @@
+### 1. 이메일 변경
+
+PUT {{baseUrl}}/api/v1/profiles/email
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzUwNDM1MDU2fQ.ySg4pa6TPD_83vm7daQO2ihn9wYqgqcBvbj4mW7ttVV4MRAIXAfIg2tYuzXLuE7DgKwMpLSIGqX07gv-sesGlQ
+Accept: */*
+Connection: keep-alive
+
+{
+  "email": "ksyn1611@naver.com"
+}
