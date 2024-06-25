@@ -36,7 +36,7 @@ jwt:
 spring:
   config:
     activate:
-      on-profile: prod
+      on-profile: production
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -46,7 +46,10 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
 jwt:
   secret-key: ${INSIDEOUT_JWT_SECRET_KEY}
