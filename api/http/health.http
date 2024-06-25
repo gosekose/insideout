@@ -1,10 +1,3 @@
-### 1. 헬스체크
-
-GET https://insideout-fargate-loadbalance-1966956640.ap-northeast-2.elb.amazonaws.com/api/v1/health
-Content-Type: application/json
-Accept: */*
-Connection: keep-alive
-
 ### 2. 헬스체크
 
 GET https://ksy-insideout.com/api/v1/health
