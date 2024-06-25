@@ -1,5 +1,7 @@
 package com.insideout.model
 
+import com.insideout.exception.ApplicationBusinessException
+import com.insideout.exception.BusinessErrorCause
 import java.time.Instant
 
 abstract class BaseDomainModel {
@@ -14,7 +16,17 @@ abstract class BaseDomainModel {
         get() = ::lastModifiedAt.isInitialized
 }
 
-// TODO
-fun <T : BaseDomainModel> T?.notnull(): T {
-    return this ?: throw IllegalArgumentException()
+fun <T : BaseDomainModel> T?.notnull(businessErrorCause: BusinessErrorCause): T {
+    return this ?: throw ApplicationBusinessException(businessErrorCause)
+}
+
+inline fun <T : BaseDomainModel> T?.notnull(loggingMessage: (BusinessErrorCause) -> String = { "" }): T {
+    if (this == null) {
+        throw ApplicationBusinessException(
+            BusinessErrorCause.NOT_FOUND,
+            loggingMessage(BusinessErrorCause.NOT_FOUND),
+            emptyMap(),
+        )
+    }
+    return this
 }

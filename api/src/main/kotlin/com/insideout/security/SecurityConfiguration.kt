@@ -3,6 +3,7 @@ package com.insideout.security
 import com.insideout.security.authentication.CustomAuthenticationProvider
 import com.insideout.security.authentication.CustomUserDetailsService
 import com.insideout.security.authentication.WebMvcCustomAuthenticationSuccessHandler
+import com.insideout.security.filter.ApiDispatcherServletFilter
 import com.insideout.security.filter.AuthorizationToMemberFilter
 import com.insideout.security.filter.LoginV1AuthenticationFilter
 import com.insideout.security.manager.MemoryMarbleAuthorizationManager
@@ -13,8 +14,10 @@ import com.insideout.usecase.member.GetMemberUseCase
 import com.insideout.usecase.member.port.TokenPort
 import com.insideout.usecase.memory.IsExistMemoryMarbleOfMemberUseCase
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -151,6 +154,16 @@ class SecurityConfiguration(
         filter.setSecurityContextRepository(delegateSecurityContextRepository())
         filter.setAuthenticationSuccessHandler(webMvcCustomAuthenticationSuccessHandler())
         return filter
+    }
+
+    @Bean
+    fun apiDispatcherServletFilterRegistrationBean(
+        apiDispatcherServletFilter: ApiDispatcherServletFilter,
+    ): FilterRegistrationBean<ApiDispatcherServletFilter> {
+        val registrationBean = FilterRegistrationBean<ApiDispatcherServletFilter>()
+        registrationBean.filter = apiDispatcherServletFilter
+        registrationBean.order = Ordered.HIGHEST_PRECEDENCE
+        return registrationBean
     }
 
     fun authenticationManager(): AuthenticationManager {
