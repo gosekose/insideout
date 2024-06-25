@@ -1,5 +1,7 @@
 package com.insideout.security.manager
 
+import com.insideout.exception.ApplicationBusinessException
+import com.insideout.exception.BusinessErrorCause
 import com.insideout.extension.getMemberId
 import com.insideout.extension.getPathVariable
 import com.insideout.usecase.memory.IsExistMemoryMarbleOfMemberUseCase
@@ -37,7 +39,7 @@ class MemoryMarbleAuthorizationManager(
                 memberId = memberId,
             )
 
-        if (!result) throw IllegalArgumentException()
+        if (!result) throw ApplicationBusinessException(BusinessErrorCause.UNAUTHORIZED)
 
         return AuthorizationDecision(true)
     }

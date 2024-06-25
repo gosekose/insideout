@@ -1,5 +1,7 @@
 package com.insideout.extension
 
+import com.insideout.exception.ApplicationBusinessException
+import com.insideout.exception.BusinessErrorCause
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.util.AntPathMatcher
 
@@ -9,7 +11,7 @@ fun HttpServletRequest.getPathVariable(
 ): String {
     val matcher = AntPathMatcher()
     val variables = matcher.extractUriTemplateVariables(pattern, this.requestURI)
-    return variables[name] ?: throw IllegalArgumentException()
+    return variables[name] ?: throw ApplicationBusinessException(BusinessErrorCause.UNAUTHORIZED)
 }
 
 fun HttpServletRequest.getMemberId(): Long {

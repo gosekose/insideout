@@ -9,7 +9,7 @@ class StringToStoreTypeConverter : Converter<String, StoreType> {
     override fun convert(source: String): StoreType? {
         return try {
             StoreType.valueOf(source.uppercase())
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
             null
         }
     }

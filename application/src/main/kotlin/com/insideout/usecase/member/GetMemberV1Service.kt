@@ -1,5 +1,6 @@
 package com.insideout.usecase.member
 
+import com.insideout.exception.BusinessErrorCause
 import com.insideout.model.member.Member
 import com.insideout.model.notnull
 import com.insideout.usecase.member.port.MemberReader
@@ -10,6 +11,6 @@ class GetMemberV1Service(
     private val memberReader: MemberReader,
 ) : GetMemberUseCase {
     override fun execute(id: Long): Member {
-        return memberReader.getByIdOrNull(id).notnull()
+        return memberReader.getByIdOrNull(id).notnull(BusinessErrorCause.MEMBER_NOT_FOUND)
     }
 }

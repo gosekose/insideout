@@ -1,5 +1,7 @@
 package com.insideout.adapter
 
+import com.insideout.exception.ApplicationBusinessException
+import com.insideout.exception.BusinessErrorCause
 import com.insideout.usecase.member.port.TokenPort
 import io.jsonwebtoken.Jwts
 import org.springframework.stereotype.Component
@@ -36,7 +38,7 @@ class JsonWebTokenStringAdapter : TokenPort {
                 .subject
                 .let(converter)
         }.getOrElse {
-            throw IllegalArgumentException() // TODO
+            throw ApplicationBusinessException(BusinessErrorCause.UNAUTHORIZED)
         }
     }
 }
