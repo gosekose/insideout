@@ -1,5 +1,7 @@
 package com.insideout.security.filter
 
+import com.insideout.exception.ApplicationBusinessException
+import com.insideout.exception.BusinessErrorCause
 import com.insideout.security.authentication.AuthenticationV1Context
 import com.insideout.security.properties.LoginSecretKeyProperties
 import com.insideout.usecase.member.port.TokenPort
@@ -51,8 +53,15 @@ class AuthorizationToMemberFilter(
             return
         }
 
-        val authorizationHeader = request.getHeader(AUTHORIZATION_HEADER)
-        val token = parseBearer(authorizationHeader)
+        val token =
+            try {
+                val authorizationHeader = request.getHeader(AUTHORIZATION_HEADER)
+                parseBearer(authorizationHeader)
+            } catch (e: Exception) {
+                logger.error { "UnAuthorized Request [URI = ${request.requestURL}, Exception = ${e.message}]" }
+                throw ApplicationBusinessException(BusinessErrorCause.UNAUTHORIZED)
+            }
+
         val memberId = tokenPort.parse(token = token, secretKey = key) { it }
 
         val wrappedRequest =

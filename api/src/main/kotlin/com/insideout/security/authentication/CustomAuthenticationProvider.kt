@@ -1,5 +1,7 @@
 package com.insideout.security.authentication
 
+import com.insideout.exception.ApplicationBusinessException
+import com.insideout.exception.BusinessErrorCause
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -18,7 +20,7 @@ class CustomAuthenticationProvider(
                 userDetails.authorities,
             )
         } catch (e: Exception) {
-            throw IllegalArgumentException()
+            throw ApplicationBusinessException(BusinessErrorCause.UNAUTHORIZED)
         }
     }
 
