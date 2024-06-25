@@ -2,12 +2,12 @@ name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main" ]
 
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: insideout
-  ECS_SERVICE: insideout-service
+  ECS_SERVICE: insideout-production-service
   ECS_CLUSTER: insideout
   ECS_TASK_FAMILY: insideout
   CONTAINER_NAME: insideout
