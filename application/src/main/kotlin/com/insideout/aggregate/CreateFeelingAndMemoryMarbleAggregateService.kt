@@ -1,19 +1,23 @@
 package com.insideout.aggregate
 
-import com.insideout.model.memory.MemoryMarble
+import com.insideout.distributeLock.DistributedLockBeforeTransaction
+import com.insideout.model.memoryMarble.MemoryMarble
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
 import com.insideout.usecase.feeling.UpdateFeelingsConnectMemoryMarbleUseCase
-import com.insideout.usecase.memory.CreateMemoryMarbleUseCase
+import com.insideout.usecase.memoryMarble.CreateMemoryMarbleUseCase
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional(readOnly = false)
 class CreateFeelingAndMemoryMarbleAggregateService(
     private val createFeelingsUseCase: CreateFeelingsUseCase,
     private val createMemoryMarbleUseCase: CreateMemoryMarbleUseCase,
     private val updateFeelingsConnectMemoryMarbleUseCase: UpdateFeelingsConnectMemoryMarbleUseCase,
 ) : CreateFeelingAndMemoryMarbleAggregate {
+    @DistributedLockBeforeTransaction(
+        key = ["#definition.memberId"],
+        name = "",
+        transactionalReadOnly = false,
+    )
     override fun create(definition: CreateFeelingAndMemoryMarbleAggregate.Definition): MemoryMarble {
         val (memberId, feelingDefinitions, content) = definition
 

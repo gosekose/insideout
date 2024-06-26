@@ -16,10 +16,11 @@ pluginManagement {
     }
 }
 
+include("lib")
 include("domain")
 include("infrastructure")
 include("infrastructure:persistence-mysql")
 include("infrastructure:authentication-jwt")
+include("infrastructure:redis")
 include("application")
-include("lib")
 include("api")
