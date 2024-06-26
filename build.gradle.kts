@@ -90,3 +90,40 @@ if (hasProperty("buildScan")) {
         setProperty("termsOfServiceAgree", "yes")
     }
 }
+
+// 기본 빌드 모듈
+val apiModules =
+    listOf(
+        ":api",
+        ":application",
+        ":infra",
+        ":infra:persistence-mysql",
+        ":infra:authentication-jwt",
+        ":infra:redis",
+        ":domain",
+        ":lib",
+    )
+
+val batchModules =
+    listOf(
+        ":batch",
+        ":application",
+        ":infra",
+        ":infra:persistence-mysql",
+        ":infra:authentication-jwt",
+        ":infra:redis",
+        ":domain",
+        ":lib",
+    )
+
+tasks.register("buildApi") {
+    group = "build"
+    description = "Builds the API modules"
+    dependsOn(apiModules.map { project(it).tasks.getByName("build") })
+}
+
+tasks.register("buildBatch") {
+    group = "build"
+    description = "Builds the Batch modules"
+    dependsOn(batchModules.map { project(it).tasks.getByName("build") })
+}
