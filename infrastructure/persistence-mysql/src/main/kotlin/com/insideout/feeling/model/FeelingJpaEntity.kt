@@ -23,11 +23,11 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(
-    name = "feeling",
+    name = "feelings",
     indexes = [
-        Index(name = "idx_feeling__created_at", columnList = "created_at"),
-        Index(name = "idx_feeling__memory_marble_id", columnList = "memory_marble_id"),
-        Index(name = "idx_feeling__member_id", columnList = "member_id"),
+        Index(name = "idx_feelings__created_at", columnList = "created_at"),
+        Index(name = "idx_feelings__memory_marble_id", columnList = "memory_marble_id"),
+        Index(name = "idx_feelings__member_id", columnList = "member_id"),
     ],
 )
 class FeelingJpaEntity(

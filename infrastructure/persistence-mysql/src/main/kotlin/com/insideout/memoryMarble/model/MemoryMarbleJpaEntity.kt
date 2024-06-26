@@ -23,10 +23,10 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(
-    name = "memory_marble",
+    name = "memory_marbles",
     indexes = [
-        Index(name = "idx_memory_marble__created_at", columnList = "created_at"),
-        Index(name = "idx_memory_marble__member_id_store_type", columnList = "member_id, store_type"),
+        Index(name = "idx_memory_marbles__created_at", columnList = "created_at"),
+        Index(name = "idx_memory_marbles__member_id_store_type", columnList = "member_id, store_type"),
     ],
 )
 class MemoryMarbleJpaEntity(
