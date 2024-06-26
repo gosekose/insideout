@@ -17,7 +17,6 @@
 
 ## 📜 2. Architecture
 
-
 <br/>
 
 ## 📹 3. Infra
@@ -25,7 +24,8 @@
 ![img.png](readmeImage/infra.png)
 
 ## 📆 4. 개발 기간
-- 2024.06.21 ~ 
+
+- 2024.06.21 ~
 
 <br/>
 
