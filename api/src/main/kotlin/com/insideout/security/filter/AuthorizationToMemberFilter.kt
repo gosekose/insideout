@@ -60,8 +60,8 @@ class AuthorizationToMemberFilter(
             } catch (e: Exception) {
                 logger.error(
                     "UnAuthorized Request [URI = ${request.requestURL}, Exception = ${e.message}, " +
-                            "RequestAddr = ${request.remoteAddr}, RequestHost = ${request.remoteHost}, " +
-                            "RequestPort = ${request.remotePort}]"
+                        "RequestAddr = ${request.remoteAddr}, RequestHost = ${request.remoteHost}, " +
+                        "RequestPort = ${request.remotePort}]",
                 )
                 throw ApplicationBusinessException(BusinessErrorCause.UNAUTHORIZED)
             }
