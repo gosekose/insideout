@@ -1,5 +1,7 @@
 package com.insideout.usecase.member
 
+import com.insideout.distributeLock.DistributedLockBeforeTransaction
+import com.insideout.distributeLock.DistributedLockPrefixKey
 import com.insideout.exception.BusinessErrorCause
 import com.insideout.exception.requireBusiness
 import com.insideout.model.member.Member
@@ -13,6 +15,11 @@ class RegisterEmailV1Service(
     private val memberSaver: MemberSaver,
     private val memberReader: MemberReader,
 ) : RegisterEmailUseCase {
+    @DistributedLockBeforeTransaction(
+        key = ["#registerEmailCommand.memberId"],
+        prefix = DistributedLockPrefixKey.MEMBER_UPDATE_WITH_MEMBER_ID,
+        transactionalReadOnly = false,
+    )
     override fun execute(registerEmailCommand: RegisterEmailUseCase.RegisterEmailCommand): Member {
         val (memberId, email) = registerEmailCommand
 

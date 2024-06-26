@@ -1,6 +1,7 @@
 package com.insideout.aggregate
 
 import com.insideout.distributeLock.DistributedLockBeforeTransaction
+import com.insideout.distributeLock.DistributedLockPrefixKey
 import com.insideout.model.memoryMarble.MemoryMarble
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
 import com.insideout.usecase.feeling.UpdateFeelingsConnectMemoryMarbleUseCase
@@ -15,7 +16,7 @@ class CreateFeelingAndMemoryMarbleAggregateService(
 ) : CreateFeelingAndMemoryMarbleAggregate {
     @DistributedLockBeforeTransaction(
         key = ["#definition.memberId"],
-        name = "",
+        prefix = DistributedLockPrefixKey.MEMORY_MARBLE_CREATE_WITH_MEMBER_ID,
         transactionalReadOnly = false,
     )
     override fun create(definition: CreateFeelingAndMemoryMarbleAggregate.Definition): MemoryMarble {

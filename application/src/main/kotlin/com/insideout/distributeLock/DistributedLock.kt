@@ -4,6 +4,6 @@ package com.insideout.distributeLock
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DistributedLock(
     val key: Array<String>,
-    val name: String = "",
+    val prefix: DistributedLockPrefixKey,
     val separator: String = ":",
 )

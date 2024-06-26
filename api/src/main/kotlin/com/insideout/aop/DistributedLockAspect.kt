@@ -8,7 +8,6 @@ import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
-import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.Order
 import org.springframework.expression.EvaluationContext
 import org.springframework.expression.ExpressionParser
@@ -24,7 +23,6 @@ import org.springframework.transaction.support.TransactionTemplate
 class DistributedLockAspect(
     private val distributedLockManager: DistributedLockManager,
     private val transactionManager: PlatformTransactionManager,
-    private val applicationContext: ApplicationContext,
 ) {
     @Around("@annotation(distributedLock)")
     fun round(
@@ -36,7 +34,7 @@ class DistributedLockAspect(
                 lockKey(
                     joinPoint = joinPoint,
                     key = key,
-                    name = name,
+                    prefix = prefix.name,
                     separator = separator,
                 )
             }
@@ -55,7 +53,7 @@ class DistributedLockAspect(
                 lockKey(
                     joinPoint = joinPoint,
                     key = key,
-                    name = name,
+                    prefix = prefix.name,
                     separator = separator,
                 )
             }
@@ -73,7 +71,7 @@ class DistributedLockAspect(
     private fun lockKey(
         joinPoint: ProceedingJoinPoint,
         key: Array<String>,
-        name: String,
+        prefix: String,
         separator: String,
     ): String {
         val evaluationContext = createEvaluationContext(joinPoint)
@@ -85,8 +83,8 @@ class DistributedLockAspect(
                 }
             }
             .joinToString(
+                prefix = "${prefix}$separator",
                 separator = separator,
-                prefix = "${name}$separator",
             )
     }
 
