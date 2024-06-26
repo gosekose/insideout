@@ -17,10 +17,10 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(
-    name = "member",
+    name = "members",
     indexes = [
-        Index(name = "idx_member__created_at", columnList = "created_at"),
-        Index(name = "idx_member__email", columnList = "email"),
+        Index(name = "idx_members__created_at", columnList = "created_at"),
+        Index(name = "idx_members__email", columnList = "email"),
     ],
 )
 class MemberJpaEntity(
