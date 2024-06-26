@@ -1,7 +1,7 @@
 package com.insideout.aggregate
 
-import com.insideout.model.memory.MemoryMarble
-import com.insideout.model.memory.model.MemoryMarbleContent
+import com.insideout.model.memoryMarble.MemoryMarble
+import com.insideout.model.memoryMarble.model.MemoryMarbleContent
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
 import com.insideout.usecase.feeling.RedefineFeelingsUseCase
 

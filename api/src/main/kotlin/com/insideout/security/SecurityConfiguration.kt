@@ -12,7 +12,7 @@ import com.insideout.security.properties.LoginSecretKeyProperties
 import com.insideout.usecase.member.CreateMemberUseCase
 import com.insideout.usecase.member.GetMemberUseCase
 import com.insideout.usecase.member.port.TokenPort
-import com.insideout.usecase.memory.IsExistMemoryMarbleOfMemberUseCase
+import com.insideout.usecase.memoryMarble.IsExistMemoryMarbleOfMemberUseCase
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean

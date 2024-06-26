@@ -22,6 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +41,14 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Wait for Redis to be ready
+        run: |
+          for i in {1..10}; do
+            nc -z localhost 6379 && echo "Redis is up" && break
+            echo "Waiting for Redis..."
+            sleep 2
+          done
 
       - name: Run Tests and Build
         run: ./gradlew build --info
@@ -58,12 +73,16 @@ jobs:
           INSIDEOUT_DB_USERNAME: ${{ secrets.INSIDEOUT_DB_USERNAME }}
           INSIDEOUT_DB_PASSWORD: ${{ secrets.INSIDEOUT_DB_PASSWORD }}
           INSIDEOUT_JWT_SECRET_KEY: ${{ secrets.INSIDEOUT_JWT_SECRET_KEY }}
+          INSIDEOUT_REDIS_HOST: ${{ secrets.INSIDEOUT_REDIS_HOST }}
+          INSIDEOUT_REDIS_PORT: ${{ secrets.INSIDEOUT_REDIS_PORT }}
         run: |
           docker build \
             --build-arg INSIDEOUT_DB_URL=${{ secrets.INSIDEOUT_DB_URL }} \
             --build-arg INSIDEOUT_DB_USERNAME=${{ secrets.INSIDEOUT_DB_USERNAME }} \
             --build-arg INSIDEOUT_DB_PASSWORD=${{ secrets.INSIDEOUT_DB_PASSWORD }} \
             --build-arg INSIDEOUT_JWT_SECRET_KEY=${{ secrets.INSIDEOUT_JWT_SECRET_KEY }} \
+            --build-arg INSIDEOUT_REDIS_HOST=${{ secrets.INSIDEOUT_REDIS_HOST }} \
+            --build-arg INSIDEOUT_REDIS_PORT=${{ secrets.INSIDEOUT_REDIS_PORT }} \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f app.Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT

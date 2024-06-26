@@ -1,8 +1,8 @@
 package com.insideout.v1.endpoint.objectField
 
-import com.insideout.model.memory.MemoryMarble
-import com.insideout.model.memory.model.MemoryMarbleContent
-import com.insideout.model.memory.type.StoreType
+import com.insideout.model.memoryMarble.MemoryMarble
+import com.insideout.model.memoryMarble.model.MemoryMarbleContent
+import com.insideout.model.memoryMarble.type.StoreType
 
 data class MemoryMarbleHttpResponse(
     val id: Long,

@@ -29,6 +29,11 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 jwt:
   secret-key: test==gslQJkmrazoY1ytKUji6V0Qd49dWiCXxXVFMFQLezNuxEoFTQ7Xl6A1F7piKFybsZnoE06nnvaMbpAbPcKoeBg==
 
@@ -50,6 +55,11 @@ spring:
 
   jackson:
     property-naming-strategy: SNAKE_CASE
+
+  data:
+    redis:
+      host: ${INSIDEOUT_REDIS_HOST}
+      port: ${INSIDEOUT_REDIS_PORT}
 
 jwt:
   secret-key: ${INSIDEOUT_JWT_SECRET_KEY}
