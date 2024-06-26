@@ -14,7 +14,9 @@
 
 <br/>
 
-## 📜 2. Architecture
+## 📜 2. layer Architecture
+
+![img.png](readmeImage/layer-architecture.png)
 
 <br/>
 
@@ -28,5 +30,6 @@
 
 <br/>
 
-## 📹 5. 테스트 API
+## 📹 5. 기능 소개
+
 
