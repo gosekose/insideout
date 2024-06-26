@@ -11,7 +11,6 @@
 - members: 회원 테이블
 - feelings: 감정 테이블
 - memory_marbles: 기억 구슬 테이블
-- idempotency_keys: 요청에 대한 멱등성 관리 테이블
 
 <br/>
 
