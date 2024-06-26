@@ -2,9 +2,9 @@ package com.insideout.security.manager
 
 import com.insideout.exception.ApplicationBusinessException
 import com.insideout.exception.BusinessErrorCause
-import com.insideout.extension.getMemberId
-import com.insideout.extension.getPathVariable
-import com.insideout.usecase.memory.IsExistMemoryMarbleOfMemberUseCase
+import com.insideout.usecase.memoryMarble.IsExistMemoryMarbleOfMemberUseCase
+import com.insideout.util.extension.getMemberId
+import com.insideout.util.extension.getPathVariable
 import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.authorization.AuthorizationManager
 import org.springframework.security.core.Authentication

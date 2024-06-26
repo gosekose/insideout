@@ -1,9 +1,9 @@
 package com.insideout.aggregate
 
-import com.insideout.model.memory.MemoryMarble
+import com.insideout.model.memoryMarble.MemoryMarble
 import com.insideout.usecase.feeling.FeelingsOperatorUseCase
-import com.insideout.usecase.memory.GetMemoryMarbleByIdUseCase
-import com.insideout.usecase.memory.RedefineMemoryMarbleUseCase
+import com.insideout.usecase.memoryMarble.GetMemoryMarbleByIdUseCase
+import com.insideout.usecase.memoryMarble.RedefineMemoryMarbleUseCase
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

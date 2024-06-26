@@ -1,7 +1,7 @@
 package com.insideout.usecase.feeling
 
 import com.insideout.model.feeling.Feelings
-import com.insideout.model.memory.MemoryMarble
+import com.insideout.model.memoryMarble.MemoryMarble
 
 interface FeelingsOperatorUseCase {
     fun operate(command: Command): Feelings
