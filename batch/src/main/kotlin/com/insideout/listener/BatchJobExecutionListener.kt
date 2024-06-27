@@ -1,5 +1,6 @@
 package com.insideout.listener
 
+import com.insideout.configuration.BatchJobDuplicationChecker
 import org.slf4j.LoggerFactory
 import org.springframework.batch.core.BatchStatus
 import org.springframework.batch.core.JobExecution

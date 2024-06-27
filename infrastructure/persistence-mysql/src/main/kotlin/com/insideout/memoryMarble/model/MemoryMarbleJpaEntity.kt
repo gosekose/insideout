@@ -42,7 +42,7 @@ class MemoryMarbleJpaEntity(
     val feelingIds: List<Long> = mutableListOf(),
     @Enumerated(value = EnumType.STRING)
     @Column(name = "store_type", columnDefinition = "varchar(32)", nullable = false)
-    val storeType: StoreType,
+    var storeType: StoreType,
     @Enumerated(value = EnumType.STRING)
     @Column(name = "status", columnDefinition = "varchar(32)", nullable = false)
     var softDeleteStatus: SoftDeleteStatus,

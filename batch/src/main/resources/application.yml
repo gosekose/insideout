@@ -19,12 +19,29 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/insideout
+    jdbc-url: jdbc:mysql://localhost:3306/insideout
     username: root
     password:
     hikari:
-      data-source-properties:
-        rewriteBatchedStatements: true
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      jdbc-url: jdbc:mysql://localhost:3306/insideout
+
+  datasource-batch:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: jdbc:mysql://localhost:3306/insideout_batch
+    username: root
+    password:
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      jdbc-url: jdbc:mysql://localhost:3306/insideout_batch
 
   jpa:
     hibernate:
@@ -32,9 +49,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          batch_size: 100
-        order_updates: true
     show-sql: true
 
   jackson:

@@ -3,10 +3,8 @@ package com.insideout
 import jakarta.annotation.PostConstruct
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.builder.SpringApplicationBuilder
 import java.time.ZoneOffset
 import java.util.TimeZone
-import kotlin.system.exitProcess
 
 @SpringBootApplication
 class BatchApplication {
@@ -17,10 +15,5 @@ class BatchApplication {
 }
 
 fun main(args: Array<String>) {
-    exitProcess(
-        SpringApplication.exit(
-            SpringApplicationBuilder(BatchApplication::class.java)
-                .run(*args),
-        ),
-    )
+    SpringApplication.run(BatchApplication::class.java, *args)
 }

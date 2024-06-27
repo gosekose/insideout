@@ -8,13 +8,6 @@ spring:
     url: jdbc:mysql://localhost:3306/insideout
     username: root
     password:
-    hikari:
-      maximum-pool-size: 10  # 최대 풀 크기
-      minimum-idle: 10       # 최소 유휴 연결 수
-      idle-timeout: 600000   # 유휴 연결의 최대 유지 시간 (밀리초)
-      max-lifetime: 1800000  # 연결의 최대 수명 (밀리초)
-      connection-timeout: 30000  # 연결을 얻기 위한 최대 대기 시간 (밀리초)
-      pool-name: HikariCP    # 풀 이름
 
   jpa:
     hibernate:
@@ -22,9 +15,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          batch_size: 100
-        order_updates: true
     show-sql: true
 
   jackson:
@@ -41,13 +31,6 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    hikari:
-      maximum-pool-size: 10  # 최대 풀 크기
-      minimum-idle: 10       # 최소 유휴 연결 수
-      idle-timeout: 600000   # 유휴 연결의 최대 유지 시간 (밀리초)
-      max-lifetime: 1800000  # 연결의 최대 수명 (밀리초)
-      connection-timeout: 30000  # 연결을 얻기 위한 최대 대기 시간 (밀리초)
-      pool-name: HikariCP    # 풀 이름
 
   jpa:
     hibernate:

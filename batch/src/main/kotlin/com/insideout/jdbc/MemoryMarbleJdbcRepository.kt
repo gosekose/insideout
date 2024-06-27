@@ -1,4 +1,4 @@
-package com.insideout.job.jdbc
+package com.insideout.jdbc
 
 import com.insideout.memoryMarble.model.MemoryMarbleJpaEntity
 import org.springframework.jdbc.core.JdbcTemplate
@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Repository
 
 interface MemoryMarbleJdbcRepository {
-    fun deleteInBatchWithJdbc(ids: List<Long>)
+    fun updateStoreTypeDailyToPermanentBatch(ids: List<Long>)
 
     fun saveInBatch(memoryMarbleJpaEntities: List<MemoryMarbleJpaEntity>)
 }
@@ -18,8 +18,8 @@ class MemoryMarbleJdbcRepositoryImpl(
     private val jdbcTemplate: JdbcTemplate,
     private val simpleJdbcInsert: SimpleJdbcInsert,
 ) : MemoryMarbleJdbcRepository {
-    override fun deleteInBatchWithJdbc(ids: List<Long>) {
-        val sql = "DELETE FROM memory_marbles WHERE id = ?"
+    override fun updateStoreTypeDailyToPermanentBatch(ids: List<Long>) {
+        val sql = "UPDATE memory_marbles SET store_type = 'PERMANENT' WHERE id = ?"
         val batchArgs = ids.map { arrayOf<Any>(it) }
         jdbcTemplate.batchUpdate(sql, batchArgs)
     }

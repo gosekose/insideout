@@ -1,4 +1,4 @@
-package com.insideout.config
+package com.insideout.configuration
 
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
