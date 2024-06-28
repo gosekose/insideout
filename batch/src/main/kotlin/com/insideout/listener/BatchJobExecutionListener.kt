@@ -8,6 +8,9 @@ import org.springframework.batch.core.JobExecutionListener
 import org.springframework.batch.core.configuration.DuplicateJobException
 import org.springframework.batch.core.explore.JobExplorer
 import org.springframework.stereotype.Component
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 
 @Component
 class BatchJobExecutionListener(
@@ -24,7 +27,8 @@ class BatchJobExecutionListener(
         logger.info(
             """
             ========================================================
-            Job Name : ${jobExecution.jobInstance.jobName}, Job Id : ${jobExecution.jobId} Start               
+            Job Name : ${jobExecution.jobInstance.jobName}, Job Id : ${jobExecution.jobId} Start      
+            START_TIME = ${ Instant.now().truncatedTo(ChronoUnit.DAYS).atOffset(ZoneOffset.UTC).toLocalDateTime() }
             ========================================================
             """.trimIndent(),
         )

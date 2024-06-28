@@ -1,16 +1,16 @@
 package com.insideout.job
 
-import com.insideout.base.SoftDeleteStatus
 import com.insideout.jdbc.MemoryMarbleJdbcRepository
+import com.insideout.jdbc.rowMapper.EntityRowMapper
 import com.insideout.job.MemoryMarbleDailyToPermanentUpdateJobConfig.Companion.JOB_NAME
 import com.insideout.listener.BatchJobExecutionListener
 import com.insideout.listener.BatchStepExecutionListener
 import com.insideout.memoryMarble.model.MemoryMarbleJpaEntity
-import com.insideout.memoryMarble.model.model.MemoryMarbleContentJpaModel
-import com.insideout.model.memoryMarble.type.StoreType
 import com.insideout.partition.RangePartitioner
+import org.slf4j.LoggerFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
+import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler
@@ -22,17 +22,17 @@ import org.springframework.batch.item.database.JdbcPagingItemReader
 import org.springframework.batch.item.database.Order
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.batch.BatchProperties
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.task.SimpleAsyncTaskExecutor
-import org.springframework.jdbc.core.RowMapper
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.transaction.PlatformTransactionManager
-import java.sql.ResultSet
 import java.sql.Timestamp
-import java.time.Instant
-import java.time.ZoneOffset
+import java.time.Instant.now
+import java.time.ZoneOffset.UTC
 import java.time.temporal.ChronoUnit
 import javax.sql.DataSource
 
@@ -44,9 +44,9 @@ import javax.sql.DataSource
     matchIfMissing = true,
 )
 class MemoryMarbleDailyToPermanentUpdateJobConfig(
+    private val jdbcTemplate: JdbcTemplate,
     private val jobRepository: JobRepository,
     private val batchProperties: BatchProperties,
-    private val rangePartitioner: RangePartitioner,
     private val simpleAsyncTaskExecutor: SimpleAsyncTaskExecutor,
     private val batchJobExecutionListener: BatchJobExecutionListener,
     private val batchStepExecutionListener: BatchStepExecutionListener,
@@ -54,28 +54,11 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     @Qualifier("businessDataSource") private val dataSource: DataSource,
     @Qualifier("businessTransactionManager") private val transactionManager: PlatformTransactionManager,
 ) {
-    private val startOfLocalDateTime =
-        Instant.now().truncatedTo(ChronoUnit.DAYS).atOffset(ZoneOffset.UTC).toLocalDateTime()
+    private val logger = LoggerFactory.getLogger(BatchJobExecutionListener::class.java)
+
+    private val startOfLocalDateTime = now().truncatedTo(ChronoUnit.DAYS).atOffset(UTC).toLocalDateTime()
     private val startTimeStamp = Timestamp.valueOf(startOfLocalDateTime)
     private val endTimeStamp = Timestamp.valueOf(startOfLocalDateTime.plusDays(1))
-
-    private val rowMapper =
-        RowMapper { rs: ResultSet, _: Int ->
-            MemoryMarbleJpaEntity(
-                id = rs.getLong("id"),
-                memberId = rs.getLong("member_id"),
-                content = MemoryMarbleContentJpaModel(description = rs.getString("description")),
-                feelingIds = rs.getString("feeling_ids").split(",").map { it.toLong() },
-                storeType = StoreType.valueOf(rs.getString("store_type")),
-                softDeleteStatus =
-                    SoftDeleteStatus.valueOf(
-                        rs.getString("status"),
-                    ),
-            ).apply {
-                createdAt = rs.getTimestamp("created_at").toInstant()
-                lastModifiedAt = rs.getTimestamp("last_modified_at").toInstant()
-            }
-        }
 
     @Bean
     fun memoryMarbleDailyToPermanentUpdaterJob(): Job {
@@ -89,7 +72,7 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     @Bean
     fun primaryMemoryMarbleDailyToPermanentUpdaterStep(): Step {
         return StepBuilder("primaryMemoryMarbleDailyToPermanentUpdaterStep", jobRepository)
-            .partitioner("replicaMemoryMarbleDailyToPermanentUpdaterStep", rangePartitioner)
+            .partitioner("replicaMemoryMarbleDailyToPermanentUpdaterStep", rangePartitioner())
             .step(replicaMemoryMarbleDailyToPermanentUpdaterStep())
             .partitionHandler(partitionHandler())
             .build()
@@ -99,13 +82,39 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     fun replicaMemoryMarbleDailyToPermanentUpdaterStep(): Step {
         return StepBuilder("replicaMemoryMarbleDailyToPermanentUpdaterStep", jobRepository)
             .chunk<MemoryMarbleJpaEntity, MemoryMarbleJpaEntity>(1000, transactionManager)
-            .reader(memoryMarbleReader())
+            .reader(memoryMarbleReader(null, null))
             .processor(memoryMarbleProcessor())
             .writer(memoryMarbleWriter())
             .listener(batchStepExecutionListener)
             .allowStartIfComplete(true)
             .build()
     }
+
+    @Bean
+    fun rangePartitioner(): RangePartitioner {
+        val minSQL = """
+            SELECT MIN(id)
+            FROM memory_marbles
+            WHERE store_type = 'DAILY'
+            AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'
+        """.trimIndent()
+
+        val maxSQL = """
+            SELECT MAX(id)
+            FROM memory_marbles
+            WHERE store_type = 'DAILY'
+            AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'
+        """.trimIndent()
+
+        val minId = jdbcTemplate.queryForObject(minSQL, Long::class.java)
+        val maxId = jdbcTemplate.queryForObject(maxSQL, Long::class.java)
+
+        return RangePartitioner(
+            minId = minId,
+            maxId = maxId,
+        )
+    }
+
 
     @Bean
     fun partitionHandler(): TaskExecutorPartitionHandler {
@@ -116,17 +125,34 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
         return partitionHandler
     }
 
+    @StepScope
     @Bean
-    fun memoryMarbleReader(): JdbcPagingItemReader<MemoryMarbleJpaEntity> {
+    fun memoryMarbleReader(
+        @Value("#{stepExecutionContext['minValue']}") minValue: Long?,
+        @Value("#{stepExecutionContext['maxValue']}") maxValue: Long?,
+    ): JdbcPagingItemReader<MemoryMarbleJpaEntity> {
         val sortKeys = mapOf("id" to Order.ASCENDING)
+
+        logger.info(
+            """
+                =================
+                partition Ids = $minValue, $maxValue
+                =================
+            """.trimIndent()
+        )
+
         return JdbcPagingItemReaderBuilder<MemoryMarbleJpaEntity>()
             .dataSource(dataSource)
             .name("memoryMarbleJdbcPagingItemReader")
             .selectClause("SELECT * ")
             .fromClause("FROM memory_marbles")
-            .whereClause("WHERE store_type = 'DAILY' where created_at > $startTimeStamp and created_at < $endTimeStamp")
+            .whereClause(
+                "WHERE store_type = 'DAILY' " +
+                        " AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'" +
+                        " AND id BETWEEN $minValue AND $maxValue"
+            )
             .sortKeys(sortKeys)
-            .rowMapper(rowMapper)
+            .rowMapper(EntityRowMapper.memoryMarbleEntityRowMapper)
             .pageSize(1000)
             .build()
     }
@@ -134,16 +160,14 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     @Bean
     fun memoryMarbleProcessor(): ItemProcessor<MemoryMarbleJpaEntity, MemoryMarbleJpaEntity> {
         return ItemProcessor { item ->
-            item.apply {
-                this.storeType = StoreType.PERMANENT
-            }
+            item
         }
     }
 
     @Bean
     fun memoryMarbleWriter(): ItemWriter<MemoryMarbleJpaEntity> {
         return ItemWriter { items ->
-            memoryMarbleJdbcRepository.saveInBatch(items.toList())
+            memoryMarbleJdbcRepository.updateStoreTypeDailyToPermanentBatch(items.map { it.id })
         }
     }
 
