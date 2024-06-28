@@ -24,7 +24,6 @@ open class BatchStepExecutionListener : StepExecutionListener {
             ======================================================================
             """.trimIndent(),
         )
-        stepExecution.exitStatus = ExitStatus.FAILED
         addAfterStep(stepExecution)
         return super.afterStep(stepExecution)
     }
