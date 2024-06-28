@@ -14,7 +14,7 @@ import javax.sql.DataSource
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager",
 )
-class JpaConfig {
+class JpaConfiguration {
     @Bean(name = ["entityManagerFactory"])
     fun entityManagerFactory(
         @Qualifier("businessDataSource") dataSource: DataSource,

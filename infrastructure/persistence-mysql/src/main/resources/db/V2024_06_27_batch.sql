@@ -114,3 +114,19 @@ INSERT INTO BATCH_JOB_SEQ (ID, UNIQUE_KEY)
 select *
 from (select 0 as ID, '0' as UNIQUE_KEY) as tmp
 where not exists(select * from BATCH_JOB_SEQ);
+
+
+create table FAILED_PARTITIONS
+(
+    id               bigint auto_increment primary key,
+    created_at       datetime(6) not null,
+    last_modified_at datetime(6) not null,
+    job_execution_id bigint      not null,
+    min_id           bigint      not null,
+    max_id           bigint      not null,
+    status           varchar(32) not null
+);
+
+create index IDX_FAILED_PARTITIONS__JOB_EXECUTION_ID_MIN_MAX
+    on FAILED_PARTITIONS (job_execution_id, min_id, max_id);
+

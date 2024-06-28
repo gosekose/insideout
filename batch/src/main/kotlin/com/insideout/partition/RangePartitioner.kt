@@ -18,7 +18,7 @@ class RangePartitioner(
         var start = minId.toLong()
         var end = start + targetSize - 1
 
-        for (i in 0 until gridSize) {
+        for (i in 0 until gridSize - 1) {
             val context = ExecutionContext()
             context.putLong("minValue", start)
             context.putLong("maxValue", end)
@@ -26,6 +26,11 @@ class RangePartitioner(
             start += targetSize
             end = start + targetSize - 1
         }
+
+        val context = ExecutionContext()
+        context.putLong("minValue", start)
+        context.putLong("maxValue", maxId)
+        result["partition${gridSize - 1}"] = context
 
         return result
     }

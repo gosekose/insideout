@@ -1,10 +1,11 @@
-package com.insideout.job
+package com.insideout.job.dailyToPermanentUpdater
 
+import com.insideout.jdbc.FailedPartitionJdbcRepository
 import com.insideout.jdbc.MemoryMarbleJdbcRepository
-import com.insideout.jdbc.rowMapper.EntityRowMapper
-import com.insideout.job.MemoryMarbleDailyToPermanentUpdateJobConfig.Companion.JOB_NAME
+import com.insideout.jdbc.rowMapper.DaoRowMapper
+import com.insideout.job.dailyToPermanentUpdater.MemoryMarbleDailyToPermanentUpdateJobConfig.Companion.JOB_NAME
 import com.insideout.listener.BatchJobExecutionListener
-import com.insideout.listener.BatchStepExecutionListener
+import com.insideout.listener.PartitionStepExecutionListener
 import com.insideout.memoryMarble.model.MemoryMarbleJpaEntity
 import com.insideout.partition.RangePartitioner
 import org.slf4j.LoggerFactory
@@ -44,13 +45,13 @@ import javax.sql.DataSource
     matchIfMissing = true,
 )
 class MemoryMarbleDailyToPermanentUpdateJobConfig(
-    private val jdbcTemplate: JdbcTemplate,
     private val jobRepository: JobRepository,
     private val batchProperties: BatchProperties,
     private val simpleAsyncTaskExecutor: SimpleAsyncTaskExecutor,
     private val batchJobExecutionListener: BatchJobExecutionListener,
-    private val batchStepExecutionListener: BatchStepExecutionListener,
     private val memoryMarbleJdbcRepository: MemoryMarbleJdbcRepository,
+    private val failedPartitionJdbcRepository: FailedPartitionJdbcRepository,
+    @Qualifier("jdbcTemplate") private val jdbcTemplate: JdbcTemplate,
     @Qualifier("businessDataSource") private val dataSource: DataSource,
     @Qualifier("businessTransactionManager") private val transactionManager: PlatformTransactionManager,
 ) {
@@ -85,43 +86,33 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
             .reader(memoryMarbleReader(null, null))
             .processor(memoryMarbleProcessor())
             .writer(memoryMarbleWriter())
-            .listener(batchStepExecutionListener)
+            .listener(batchStepExecutionListener())
             .allowStartIfComplete(true)
             .build()
     }
 
     @Bean
     fun rangePartitioner(): RangePartitioner {
-        val minSQL = """
-            SELECT MIN(id)
-            FROM memory_marbles
-            WHERE store_type = 'DAILY'
-            AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'
-        """.trimIndent()
-
-        val maxSQL = """
-            SELECT MAX(id)
-            FROM memory_marbles
-            WHERE store_type = 'DAILY'
-            AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'
-        """.trimIndent()
-
-        val minId = jdbcTemplate.queryForObject(minSQL, Long::class.java)
-        val maxId = jdbcTemplate.queryForObject(maxSQL, Long::class.java)
-
+        val (minId, maxId) = partitionResultJdbcQuery()
         return RangePartitioner(
             minId = minId,
             maxId = maxId,
         )
     }
 
-
     @Bean
     fun partitionHandler(): TaskExecutorPartitionHandler {
         val partitionHandler = TaskExecutorPartitionHandler()
         partitionHandler.setTaskExecutor(simpleAsyncTaskExecutor)
         partitionHandler.step = replicaMemoryMarbleDailyToPermanentUpdaterStep()
-        partitionHandler.gridSize = 5
+
+        val (minId, maxId) = partitionResultJdbcQuery()
+        if ((minId == null || maxId == null) || (maxId - minId) < 5) {
+            partitionHandler.gridSize = 1
+        } else {
+            partitionHandler.gridSize = 5
+        }
+
         return partitionHandler
     }
 
@@ -135,10 +126,10 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
 
         logger.info(
             """
-                =================
-                partition Ids = $minValue, $maxValue
-                =================
-            """.trimIndent()
+            =================
+            partition Ids = $minValue, $maxValue
+            =================
+            """.trimIndent(),
         )
 
         return JdbcPagingItemReaderBuilder<MemoryMarbleJpaEntity>()
@@ -148,11 +139,11 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
             .fromClause("FROM memory_marbles")
             .whereClause(
                 "WHERE store_type = 'DAILY' " +
-                        " AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'" +
-                        " AND id BETWEEN $minValue AND $maxValue"
+                    " AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'" +
+                    " AND id BETWEEN $minValue AND $maxValue",
             )
             .sortKeys(sortKeys)
-            .rowMapper(EntityRowMapper.memoryMarbleEntityRowMapper)
+            .rowMapper(DaoRowMapper.memoryMarbleEntityRowMapper)
             .pageSize(1000)
             .build()
     }
@@ -160,15 +151,46 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     @Bean
     fun memoryMarbleProcessor(): ItemProcessor<MemoryMarbleJpaEntity, MemoryMarbleJpaEntity> {
         return ItemProcessor { item ->
-            item
+            item.apply {
+                this.lastModifiedAt = now()
+            }
         }
     }
 
     @Bean
     fun memoryMarbleWriter(): ItemWriter<MemoryMarbleJpaEntity> {
         return ItemWriter { items ->
+            println("items.size = ${items.size()}")
             memoryMarbleJdbcRepository.updateStoreTypeDailyToPermanentBatch(items.map { it.id })
         }
+    }
+
+    @Bean
+    fun batchStepExecutionListener(): PartitionStepExecutionListener {
+        return PartitionStepExecutionListener(failedPartitionJdbcRepository)
+    }
+
+    private fun partitionResultJdbcQuery(): Pair<Long?, Long?> {
+        val minSQL =
+            """
+            SELECT MIN(id)
+            FROM memory_marbles
+            WHERE store_type = 'DAILY'
+            AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'
+            """.trimIndent()
+
+        val maxSQL =
+            """
+            SELECT MAX(id)
+            FROM memory_marbles
+            WHERE store_type = 'DAILY'
+            AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'
+            """.trimIndent()
+
+        val minId = jdbcTemplate.queryForObject(minSQL, Long::class.java)
+        val maxId = jdbcTemplate.queryForObject(maxSQL, Long::class.java)
+
+        return Pair(minId, maxId)
     }
 
     companion object {

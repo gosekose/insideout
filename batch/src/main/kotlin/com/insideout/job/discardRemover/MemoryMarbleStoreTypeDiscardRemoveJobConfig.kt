@@ -1,6 +1,6 @@
-package com.insideout.job
+package com.insideout.job.discardRemover
 
-import com.insideout.job.MemoryMarbleStoreTypeDiscardRemoveJobConfig.Companion.JOB_NAME
+import com.insideout.job.discardRemover.MemoryMarbleStoreTypeDiscardRemoveJobConfig.Companion.JOB_NAME
 import com.insideout.listener.BatchJobExecutionListener
 import com.insideout.listener.BatchStepExecutionListener
 import org.springframework.batch.core.ExitStatus
@@ -30,11 +30,10 @@ import org.springframework.transaction.PlatformTransactionManager
     matchIfMissing = true,
 )
 class MemoryMarbleStoreTypeDiscardRemoveJobConfig(
-    private val jdbcTemplate: JdbcTemplate,
     private val jobRepository: JobRepository,
     private val batchProperties: BatchProperties,
     private val batchJobExecutionListener: BatchJobExecutionListener,
-    private val batchStepExecutionListener: BatchStepExecutionListener,
+    @Qualifier("jdbcTemplate") private val jdbcTemplate: JdbcTemplate,
     @Qualifier("businessTransactionManager") private val transactionManager: PlatformTransactionManager,
 ) {
     @Bean
@@ -50,7 +49,7 @@ class MemoryMarbleStoreTypeDiscardRemoveJobConfig(
     fun memoryMarbleDiscardRemoverStep(): Step {
         return StepBuilder("memoryMarbleDiscardRemoverStep", jobRepository)
             .tasklet(deleteTasklet(), transactionManager)
-            .listener(batchStepExecutionListener)
+            .listener(batchStepExecutionListener())
             .build()
     }
 
@@ -74,6 +73,11 @@ class MemoryMarbleStoreTypeDiscardRemoveJobConfig(
         retryPolicy.maxAttempts = 3
         retryTemplate.setRetryPolicy(retryPolicy)
         return retryTemplate
+    }
+
+    @Bean
+    fun batchStepExecutionListener(): BatchStepExecutionListener {
+        return BatchStepExecutionListener()
     }
 
     companion object {

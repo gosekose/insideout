@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 import javax.sql.DataSource
 
 @Configuration
-class DataSourceConfig {
+class DataSourceConfiguration {
     @Bean(name = ["batchDataSource"])
     @ConfigurationProperties(prefix = "spring.datasource-batch")
     fun batchDataSource(): DataSource {

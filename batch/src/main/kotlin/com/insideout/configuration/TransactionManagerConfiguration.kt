@@ -8,7 +8,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
 
 @Configuration
-class TransactionManagerConfig {
+class TransactionManagerConfiguration {
     @Bean(name = ["batchTransactionManager"])
     fun batchTransactionManager(
         @Qualifier("batchDataSource") batchDataSource: DataSource,
