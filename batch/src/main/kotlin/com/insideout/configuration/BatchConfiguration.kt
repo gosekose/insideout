@@ -1,6 +1,5 @@
 package com.insideout.configuration
 
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration
 import org.springframework.batch.core.explore.JobExplorer
 import org.springframework.batch.core.launch.JobLauncher
@@ -20,12 +19,10 @@ import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
 
 @Configuration
-@EnableBatchProcessing
 @EnableConfigurationProperties(BatchProperties::class)
 class BatchConfiguration(
     @Qualifier("batchDataSource") private val batchDataSource: DataSource,
 ) : DefaultBatchConfiguration() {
-
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "spring.batch.job", name = ["enabled"], havingValue = "true", matchIfMissing = true)
@@ -44,9 +41,10 @@ class BatchConfiguration(
         return runner
     }
 
-
     @Bean
-    fun jobRepository(@Qualifier("batchTransactionManager") transactionManager: PlatformTransactionManager): JobRepository {
+    fun jobRepository(
+        @Qualifier("batchTransactionManager") transactionManager: PlatformTransactionManager,
+    ): JobRepository {
         val factory = JobRepositoryFactoryBean()
         factory.setDataSource(batchDataSource)
         factory.transactionManager = transactionManager

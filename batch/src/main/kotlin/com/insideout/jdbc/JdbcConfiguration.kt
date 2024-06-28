@@ -8,7 +8,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import javax.sql.DataSource
 
 @Configuration
-class JdbcConfiguration(@Qualifier("businessDataSource") private val dataSource: DataSource) {
+class JdbcConfiguration(
+    @Qualifier("businessDataSource") private val dataSource: DataSource,
+) {
     @Bean
     fun jdbcTemplate(): JdbcTemplate {
         return JdbcTemplate(dataSource)

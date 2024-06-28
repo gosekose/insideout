@@ -12,12 +12,12 @@ import javax.sql.DataSource
 @EnableJpaRepositories(
     basePackages = ["com.insideout.*"],
     entityManagerFactoryRef = "entityManagerFactory",
-    transactionManagerRef = "transactionManager"
+    transactionManagerRef = "transactionManager",
 )
 class JpaConfig {
     @Bean(name = ["entityManagerFactory"])
     fun entityManagerFactory(
-        @Qualifier("businessDataSource") dataSource: DataSource
+        @Qualifier("businessDataSource") dataSource: DataSource,
     ): LocalContainerEntityManagerFactoryBean {
         val factory = LocalContainerEntityManagerFactoryBean()
         factory.dataSource = dataSource

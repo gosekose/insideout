@@ -38,10 +38,10 @@ import javax.sql.DataSource
 
 @Configuration
 @ConditionalOnProperty(
-    prefix = "spring.batch.job.name",
+    prefix = "spring.batch.job",
+    name = ["name"],
     havingValue = JOB_NAME,
-    name = ["enabled"],
-    matchIfMissing = true
+    matchIfMissing = true,
 )
 class MemoryMarbleDailyToPermanentUpdateJobConfig(
     private val jobRepository: JobRepository,
@@ -54,7 +54,6 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     @Qualifier("businessDataSource") private val dataSource: DataSource,
     @Qualifier("businessTransactionManager") private val transactionManager: PlatformTransactionManager,
 ) {
-
     private val startOfLocalDateTime =
         Instant.now().truncatedTo(ChronoUnit.DAYS).atOffset(ZoneOffset.UTC).toLocalDateTime()
     private val startTimeStamp = Timestamp.valueOf(startOfLocalDateTime)
@@ -67,8 +66,11 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
                 memberId = rs.getLong("member_id"),
                 content = MemoryMarbleContentJpaModel(description = rs.getString("description")),
                 feelingIds = rs.getString("feeling_ids").split(",").map { it.toLong() },
-                storeType = StoreType.valueOf(rs.getString("store_type")), // Custom type conversion
-                softDeleteStatus = SoftDeleteStatus.valueOf(rs.getString("status"))
+                storeType = StoreType.valueOf(rs.getString("store_type")),
+                softDeleteStatus =
+                    SoftDeleteStatus.valueOf(
+                        rs.getString("status"),
+                    ),
             ).apply {
                 createdAt = rs.getTimestamp("created_at").toInstant()
                 lastModifiedAt = rs.getTimestamp("last_modified_at").toInstant()

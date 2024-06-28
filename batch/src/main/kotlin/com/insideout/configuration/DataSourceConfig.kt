@@ -10,7 +10,6 @@ import javax.sql.DataSource
 
 @Configuration
 class DataSourceConfig {
-
     @Bean(name = ["batchDataSource"])
     @ConfigurationProperties(prefix = "spring.datasource-batch")
     fun batchDataSource(): DataSource {
@@ -27,9 +26,10 @@ class DataSourceConfig {
             .build()
     }
 
-
     @Bean
-    fun dataSource(@Qualifier("batchDataSource") batchDataSource: DataSource): DataSource {
+    fun dataSource(
+        @Qualifier("batchDataSource") batchDataSource: DataSource,
+    ): DataSource {
         return batchDataSource
     }
 }

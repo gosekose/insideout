@@ -15,6 +15,7 @@ class BatchJobExecutionListener(
     private val jobDuplicationChecker: BatchJobDuplicationChecker,
 ) : JobExecutionListener {
     private val logger = LoggerFactory.getLogger(BatchJobExecutionListener::class.java)
+
     override fun beforeJob(jobExecution: JobExecution) {
         require(jobDuplicationChecker.check(jobExplorer, jobExecution)) {
             throw DuplicateJobException("이미 실행 중인 Job이 존재합니다 [JobName: ${jobExplorer.jobNames}, JobId: ${jobExecution.jobId}]")

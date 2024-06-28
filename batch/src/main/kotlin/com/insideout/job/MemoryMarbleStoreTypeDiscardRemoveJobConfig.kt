@@ -1,6 +1,8 @@
 package com.insideout.job
 
 import com.insideout.job.MemoryMarbleStoreTypeDiscardRemoveJobConfig.Companion.JOB_NAME
+import com.insideout.listener.BatchJobExecutionListener
+import com.insideout.listener.BatchStepExecutionListener
 import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -22,23 +24,25 @@ import org.springframework.transaction.PlatformTransactionManager
 
 @Configuration
 @ConditionalOnProperty(
-    prefix = "spring.batch.job.name",
+    prefix = "spring.batch.job",
+    name = ["name"],
     havingValue = JOB_NAME,
-    name = ["enabled"],
-    matchIfMissing = true
+    matchIfMissing = true,
 )
 class MemoryMarbleStoreTypeDiscardRemoveJobConfig(
     private val jdbcTemplate: JdbcTemplate,
     private val jobRepository: JobRepository,
     private val batchProperties: BatchProperties,
+    private val batchJobExecutionListener: BatchJobExecutionListener,
+    private val batchStepExecutionListener: BatchStepExecutionListener,
     @Qualifier("businessTransactionManager") private val transactionManager: PlatformTransactionManager,
 ) {
-
     @Bean
     fun memoryMarbleDiscardRemoverJob(): Job {
         return JobBuilder(batchProperties.job.name, jobRepository)
             .incrementer(RunIdIncrementer())
             .start(memoryMarbleDiscardRemoverStep())
+            .listener(batchJobExecutionListener)
             .build()
     }
 
@@ -46,6 +50,7 @@ class MemoryMarbleStoreTypeDiscardRemoveJobConfig(
     fun memoryMarbleDiscardRemoverStep(): Step {
         return StepBuilder("memoryMarbleDiscardRemoverStep", jobRepository)
             .tasklet(deleteTasklet(), transactionManager)
+            .listener(batchStepExecutionListener)
             .build()
     }
 

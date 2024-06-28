@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class BatchStepExecutionListener : StepExecutionListener {
     private val logger = LoggerFactory.getLogger(BatchJobExecutionListener::class.java)
+
     override fun beforeStep(stepExecution: StepExecution) {
         stepExecution.executionContext.putLong("startTime", System.currentTimeMillis())
         super.beforeStep(stepExecution)
@@ -19,10 +20,10 @@ class BatchStepExecutionListener : StepExecutionListener {
         val endTime = System.currentTimeMillis()
         logger.info(
             """
-                ======================================================================  
-                Step ${stepExecution.stepName} executed in ${endTime - startTime} ms
-                ======================================================================
-            """.trimIndent()
+            ======================================================================  
+            Step ${stepExecution.stepName} executed in ${endTime - startTime} ms
+            ======================================================================
+            """.trimIndent(),
         )
         return super.afterStep(stepExecution)
     }

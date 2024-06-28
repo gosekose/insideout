@@ -9,19 +9,24 @@ import javax.sql.DataSource
 
 @Configuration
 class TransactionManagerConfig {
-
     @Bean(name = ["batchTransactionManager"])
-    fun batchTransactionManager(@Qualifier("batchDataSource") batchDataSource: DataSource): PlatformTransactionManager {
+    fun batchTransactionManager(
+        @Qualifier("batchDataSource") batchDataSource: DataSource,
+    ): PlatformTransactionManager {
         return DataSourceTransactionManager(batchDataSource)
     }
 
     @Bean(name = ["businessTransactionManager"])
-    fun businessTransactionManager(@Qualifier("businessDataSource") businessDataSource: DataSource): PlatformTransactionManager {
+    fun businessTransactionManager(
+        @Qualifier("businessDataSource") businessDataSource: DataSource,
+    ): PlatformTransactionManager {
         return DataSourceTransactionManager(businessDataSource)
     }
 
     @Bean
-    fun transactionManager(@Qualifier("batchTransactionManager") batchTransactionManager: PlatformTransactionManager): PlatformTransactionManager {
+    fun transactionManager(
+        @Qualifier("batchTransactionManager") batchTransactionManager: PlatformTransactionManager,
+    ): PlatformTransactionManager {
         return batchTransactionManager
     }
 }
