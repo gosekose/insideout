@@ -102,14 +102,29 @@ open class CustomJdbcPagingItemReader<T>(
             }
         } catch (e: Exception) {
             failedValues["page_$page"] = firstPageSql
-            logger.error("Error during reading page: ", e)
+            query = retryWithPage(
+                page = page,
+                offsetCount = 1,
+                retryCount = 1,
+                rowCallback = rowCallback
+            )
+        }
+        results.addAll(query)
+    }
 
-            val adjustedMinValue = pageSize
+    private fun retryWithPage(
+        page: Int,
+        offsetCount: Int,
+        retryCount: Int,
+        rowCallback: PagingRowMapper,
+    ): List<T> {
+        return try {
+            val adjustedMinValue = pageSize * offsetCount
             val sqlWithOffset = "$firstPageSql OFFSET $adjustedMinValue"
 
             logger.info("Retry SQL used for reading page $page with adjusted offset: [$sqlWithOffset]")
 
-            query = if (!parameterValues.isNullOrEmpty()) {
+            return if (!parameterValues.isNullOrEmpty()) {
                 if (this.queryProvider.isUsingNamedParameters) {
                     namedParameterJdbcTemplate!!.query(
                         sqlWithOffset, getParameterMap(parameterValues, null),
@@ -124,8 +139,17 @@ open class CustomJdbcPagingItemReader<T>(
             } else {
                 getJdbcTemplate().query(sqlWithOffset, rowCallback)
             }
+        } catch (e: Exception) {
+            if (retryCount < 5) {
+                failedValues["page_$page"] = firstPageSql
+                retryWithPage(
+                    page = page + 1,
+                    offsetCount = offsetCount + 1,
+                    retryCount = retryCount + 1,
+                    rowCallback = rowCallback,
+                )
+            } else throw e
         }
-        results.addAll(query)
     }
 
     @Throws(ItemStreamException::class)

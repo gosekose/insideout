@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Repository
 
 interface FailedPartitionJdbcRepository {
+    fun save(failedPartition: FailedPartition)
     fun saveAll(failedPartitions: List<FailedPartition>)
 }
 
@@ -22,8 +23,16 @@ class FailedPartitionJdbcRepositoryImpl(
             .usingColumns("min_id", "max_id", "step_execution_id", "created_at", "last_modified_at", "status")
     }
 
+    override fun save(failedPartition: FailedPartition) {
+        simpleJdbcInsert.executeBatch(generateMapSqlParameterSource(failedPartition))
+    }
+
     override fun saveAll(failedPartitions: List<FailedPartition>) {
         simpleJdbcInsert.executeBatch(*generateMapSqlParameterSource(failedPartitions))
+    }
+
+    private fun generateMapSqlParameterSource(failedPartition: FailedPartition): SqlParameterSource {
+        return failedPartition.let { DaoRowMapper.mapSqlParameterSourceWith(it) }
     }
 
     private fun generateMapSqlParameterSource(failedPartitions: List<FailedPartition>): Array<SqlParameterSource> {

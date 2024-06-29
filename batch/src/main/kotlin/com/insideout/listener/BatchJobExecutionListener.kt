@@ -1,7 +1,6 @@
 package com.insideout.listener
 
 import com.insideout.configuration.BatchJobDuplicationChecker
-import org.slf4j.LoggerFactory
 import org.springframework.batch.core.BatchStatus
 import org.springframework.batch.core.JobExecution
 import org.springframework.batch.core.JobExecutionListener
@@ -17,8 +16,6 @@ class BatchJobExecutionListener(
     private val jobExplorer: JobExplorer,
     private val jobDuplicationChecker: BatchJobDuplicationChecker,
 ) : JobExecutionListener {
-    private val logger = LoggerFactory.getLogger(BatchJobExecutionListener::class.java)
-
     override fun beforeJob(jobExecution: JobExecution) {
         require(jobDuplicationChecker.check(jobExplorer, jobExecution)) {
             throw DuplicateJobException("이미 실행 중인 Job이 존재합니다 [JobName: ${jobExplorer.jobNames}, JobId: ${jobExecution.jobId}]")
