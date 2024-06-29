@@ -20,9 +20,7 @@ import org.springframework.batch.core.repository.JobRepository
 import org.springframework.batch.core.step.builder.StepBuilder
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.batch.item.ItemWriter
-import org.springframework.batch.item.database.JdbcPagingItemReader
 import org.springframework.batch.item.database.Order
-import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.batch.BatchProperties
@@ -123,14 +121,13 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     fun memoryMarbleReader(
         @Value("#{stepExecutionContext['minValue']}") minValue: Long?,
         @Value("#{stepExecutionContext['maxValue']}") maxValue: Long?,
-    ): JdbcPagingItemReader<MemoryMarbleJpaEntity> {
+    ): CustomJdbcPagingItemReader<MemoryMarbleJpaEntity> {
         val sortKeys = mapOf("id" to Order.ASCENDING)
 
         logger.info("partition Ids = $minValue, $maxValue")
 
-        return JdbcPagingItemReaderBuilder<MemoryMarbleJpaEntity>()
-            .dataSource(dataSource)
-            .name("memoryMarbleJdbcPagingItemReader")
+        return CustomJdbcPagingItemReaderBuilder<MemoryMarbleJpaEntity>(dataSource)
+            .name(MEMORY_MARBLE_JDBC_PAGING_ITEM_READER)
             .selectClause("SELECT * ")
             .fromClause("FROM memory_marbles")
             .whereClause(
@@ -191,9 +188,9 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
 
     companion object {
         const val JOB_NAME = "insideout.batch.memoryMarbleDailyToPermanentUpdater"
-        private const val CHUNK_SIZE = 1000
-        private const val PAGE_SIZE = 1000
+        private const val CHUNK_SIZE = 3
+        private const val PAGE_SIZE = 3
         private const val PARTITION_SIZE = 5
-
+        const val MEMORY_MARBLE_JDBC_PAGING_ITEM_READER = "memoryMarbleJdbcPagingItemReader"
     }
 }

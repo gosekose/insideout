@@ -19,7 +19,7 @@ class FailedPartitionJdbcRepositoryImpl(
         simpleJdbcInsert
             .withTableName("FAILED_PARTITIONS")
             .usingGeneratedKeyColumns("id")
-            .usingColumns("min_id", "max_id", "job_execution_id", "created_at", "last_modified_at", "status")
+            .usingColumns("min_id", "max_id", "step_execution_id", "created_at", "last_modified_at", "status")
     }
 
     override fun save(failedPartition: FailedPartition) {
