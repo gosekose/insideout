@@ -34,6 +34,7 @@ open class CustomJdbcPagingItemReader<T>(
     private lateinit var remainingPagesSql: String
     private var startAfterValues: MutableMap<String, Any>? = null
     private var previousStartAfterValues: MutableMap<String, Any>? = null
+    private val failedValues = mutableMapOf<String, String>()
 
     /**
      * Check mandatory properties.
@@ -61,53 +62,52 @@ open class CustomJdbcPagingItemReader<T>(
         }
 
         val rowCallback = PagingRowMapper()
-        val query: List<T>
+        var query: List<T>
 
-        if (page == 0) {
-            if (logger.isDebugEnabled) {
-                logger.debug("SQL used for reading first page: [$firstPageSql]")
-            }
-            query = if (!parameterValues.isNullOrEmpty()) {
-                if (this.queryProvider.isUsingNamedParameters) {
+        try {
+            if (page == 0) {
+                logger.info("SQL used for reading first page: [$firstPageSql]")
+                query = if (!parameterValues.isNullOrEmpty()) {
+                    if (this.queryProvider.isUsingNamedParameters) {
+                        namedParameterJdbcTemplate!!.query(
+                            firstPageSql, getParameterMap(parameterValues, null),
+                            rowCallback
+                        )
+                    } else {
+                        getJdbcTemplate().query(
+                            firstPageSql, rowCallback,
+                            *getParameterList(parameterValues, null).toTypedArray()
+                        )
+                    }
+                } else {
+                    getJdbcTemplate().query(firstPageSql, rowCallback)
+                }
+            } else if (startAfterValues != null) {
+                previousStartAfterValues = startAfterValues
+                logger.info("SQL used for reading remaining pages: [$remainingPagesSql]")
+
+                query = if (this.queryProvider.isUsingNamedParameters) {
                     namedParameterJdbcTemplate!!.query(
-                        firstPageSql, getParameterMap(parameterValues, null),
-                        rowCallback
+                        remainingPagesSql,
+                        getParameterMap(parameterValues, startAfterValues), rowCallback
                     )
                 } else {
                     getJdbcTemplate().query(
-                        firstPageSql, rowCallback,
-                        *getParameterList(parameterValues, null).toTypedArray()
+                        remainingPagesSql, rowCallback,
+                        *getParameterList(parameterValues, startAfterValues).toTypedArray()
                     )
                 }
             } else {
-                getJdbcTemplate().query(firstPageSql, rowCallback)
+                query = emptyList()
             }
-        } else if (startAfterValues != null) {
-            previousStartAfterValues = startAfterValues
-            if (logger.isDebugEnabled) {
-                logger.debug("SQL used for reading remaining pages: [$remainingPagesSql]")
-            }
+        } catch (e: Exception) {
+            failedValues["page_$page"] = firstPageSql
+            logger.error("Error during reading page: ", e)
 
-            query = if (this.queryProvider.isUsingNamedParameters) {
-                namedParameterJdbcTemplate!!.query(
-                    remainingPagesSql,
-                    getParameterMap(parameterValues, startAfterValues), rowCallback
-                )
-            } else {
-                getJdbcTemplate().query(
-                    remainingPagesSql, rowCallback,
-                    *getParameterList(parameterValues, startAfterValues).toTypedArray()
-                )
-            }
-        } else { // page != 0, startAfterValues == null
-            // Adjust minValue (offset) to skip failed chunk
-            val adjustedMinValue = (page - 1) * pageSize
-            // Generate SQL with adjusted offset
-            val sqlWithOffset = "${firstPageSql} OFFSET ${adjustedMinValue} ROWS FETCH NEXT ${pageSize} ROWS ONLY"
+            val adjustedMinValue = pageSize
+            val sqlWithOffset = "$firstPageSql OFFSET $adjustedMinValue"
 
-            if (logger.isDebugEnabled) {
-                logger.debug("SQL used for reading page $page with adjusted offset: [$sqlWithOffset]")
-            }
+            logger.info("Retry SQL used for reading page $page with adjusted offset: [$sqlWithOffset]")
 
             query = if (!parameterValues.isNullOrEmpty()) {
                 if (this.queryProvider.isUsingNamedParameters) {
@@ -133,12 +133,13 @@ open class CustomJdbcPagingItemReader<T>(
         super.update(executionContext)
         if (isSaveState) {
             if (isAtEndOfPage() && startAfterValues != null) {
-                // restart on next page
                 executionContext.put(getExecutionContextKey(START_AFTER_VALUE), startAfterValues)
             } else if (previousStartAfterValues != null) {
-                // restart on current page
                 executionContext.put(getExecutionContextKey(START_AFTER_VALUE), previousStartAfterValues)
             }
+        }
+        if (failedValues.isNotEmpty()) {
+            executionContext.put(getExecutionContextKey(FAIL_VALUE), failedValues)
         }
     }
 
@@ -188,9 +189,7 @@ open class CustomJdbcPagingItemReader<T>(
                 parameterList.add(keys[i].value)
             }
         }
-        if (logger.isDebugEnabled) {
-            logger.debug("Using parameterList:$parameterList")
-        }
+        logger.info("Using parameterList:$parameterList")
         return parameterList
     }
 
@@ -215,7 +214,7 @@ open class CustomJdbcPagingItemReader<T>(
 
     companion object {
         const val START_AFTER_VALUE = "start.after"
-
+        const val FAIL_VALUE = "fail.value"
         const val VALUE_NOT_SET = -1
     }
 }

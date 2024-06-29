@@ -188,9 +188,9 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
 
     companion object {
         const val JOB_NAME = "insideout.batch.memoryMarbleDailyToPermanentUpdater"
-        private const val CHUNK_SIZE = 3
-        private const val PAGE_SIZE = 3
-        private const val PARTITION_SIZE = 5
         const val MEMORY_MARBLE_JDBC_PAGING_ITEM_READER = "memoryMarbleJdbcPagingItemReader"
+        const val PAGE_SIZE = 3
+        private const val CHUNK_SIZE = 3
+        private const val PARTITION_SIZE = 5
     }
 }
