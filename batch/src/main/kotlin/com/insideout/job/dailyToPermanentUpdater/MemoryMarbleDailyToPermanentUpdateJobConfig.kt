@@ -11,6 +11,7 @@ import com.insideout.partition.RangePartitioner
 import org.slf4j.LoggerFactory
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
+import org.springframework.batch.core.StepExecutionListener
 import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.launch.support.RunIdIncrementer
@@ -67,6 +68,7 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
             .incrementer(RunIdIncrementer())
             .start(primaryMemoryMarbleDailyToPermanentUpdaterStep())
             .listener(batchJobExecutionListener)
+            .preventRestart()
             .build()
     }
 
@@ -82,12 +84,12 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     @Bean
     fun replicaMemoryMarbleDailyToPermanentUpdaterStep(): Step {
         return StepBuilder("replicaMemoryMarbleDailyToPermanentUpdaterStep", jobRepository)
-            .chunk<MemoryMarbleJpaEntity, MemoryMarbleJpaEntity>(1000, transactionManager)
+            .chunk<MemoryMarbleJpaEntity, MemoryMarbleJpaEntity>(CHUNK_SIZE, transactionManager)
             .reader(memoryMarbleReader(null, null))
             .processor(memoryMarbleProcessor())
             .writer(memoryMarbleWriter())
             .listener(batchStepExecutionListener())
-            .allowStartIfComplete(true)
+            .transactionManager(transactionManager)
             .build()
     }
 
@@ -107,10 +109,10 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
         partitionHandler.step = replicaMemoryMarbleDailyToPermanentUpdaterStep()
 
         val (minId, maxId) = partitionResultJdbcQuery()
-        if ((minId == null || maxId == null) || (maxId - minId) < 5) {
+        if ((minId == null || maxId == null) || (maxId - minId) < PARTITION_SIZE) {
             partitionHandler.gridSize = 1
         } else {
-            partitionHandler.gridSize = 5
+            partitionHandler.gridSize = PARTITION_SIZE
         }
 
         return partitionHandler
@@ -124,13 +126,7 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     ): JdbcPagingItemReader<MemoryMarbleJpaEntity> {
         val sortKeys = mapOf("id" to Order.ASCENDING)
 
-        logger.info(
-            """
-            =================
-            partition Ids = $minValue, $maxValue
-            =================
-            """.trimIndent(),
-        )
+        logger.info("partition Ids = $minValue, $maxValue")
 
         return JdbcPagingItemReaderBuilder<MemoryMarbleJpaEntity>()
             .dataSource(dataSource)
@@ -139,12 +135,12 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
             .fromClause("FROM memory_marbles")
             .whereClause(
                 "WHERE store_type = 'DAILY' " +
-                    " AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'" +
-                    " AND id BETWEEN $minValue AND $maxValue",
+                        " AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'" +
+                        " AND id BETWEEN $minValue AND $maxValue",
             )
             .sortKeys(sortKeys)
             .rowMapper(DaoRowMapper.memoryMarbleEntityRowMapper)
-            .pageSize(1000)
+            .pageSize(PAGE_SIZE)
             .build()
     }
 
@@ -160,13 +156,13 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
     @Bean
     fun memoryMarbleWriter(): ItemWriter<MemoryMarbleJpaEntity> {
         return ItemWriter { items ->
-            println("items.size = ${items.size()}")
             memoryMarbleJdbcRepository.updateStoreTypeDailyToPermanentBatch(items.map { it.id })
         }
     }
 
     @Bean
-    fun batchStepExecutionListener(): PartitionStepExecutionListener {
+    @StepScope
+    fun batchStepExecutionListener(): StepExecutionListener {
         return PartitionStepExecutionListener(failedPartitionJdbcRepository)
     }
 
@@ -195,5 +191,9 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
 
     companion object {
         const val JOB_NAME = "insideout.batch.memoryMarbleDailyToPermanentUpdater"
+        private const val CHUNK_SIZE = 1000
+        private const val PAGE_SIZE = 1000
+        private const val PARTITION_SIZE = 5
+
     }
 }

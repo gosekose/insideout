@@ -24,11 +24,11 @@ class BatchJobExecutionListener(
             throw DuplicateJobException("이미 실행 중인 Job이 존재합니다 [JobName: ${jobExplorer.jobNames}, JobId: ${jobExecution.jobId}]")
         }
 
-        logger.info(
+        println(
             """
             ========================================================
             Job Name : ${jobExecution.jobInstance.jobName}, Job Id : ${jobExecution.jobId} Start      
-            START_TIME = ${ Instant.now().truncatedTo(ChronoUnit.DAYS).atOffset(ZoneOffset.UTC).toLocalDateTime() }
+            START_TIME = ${Instant.now().truncatedTo(ChronoUnit.DAYS).atOffset(ZoneOffset.UTC).toLocalDateTime()}
             ========================================================
             """.trimIndent(),
         )
@@ -37,7 +37,7 @@ class BatchJobExecutionListener(
 
     override fun afterJob(jobExecution: JobExecution) {
         if (jobExecution.status == BatchStatus.FAILED) {
-            logger.info(
+            println(
                 """
                 ========================================================
                 Job Failed
@@ -48,7 +48,7 @@ class BatchJobExecutionListener(
         }
 
         if (jobExecution.status == BatchStatus.COMPLETED) {
-            logger.info(
+            println(
                 """
                 ========================================================
                 Job Completed

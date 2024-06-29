@@ -13,7 +13,7 @@ class RangePartitioner(
             return result
         }
 
-        val targetSize = (maxId - minId) / gridSize + 1
+        val targetSize = (maxId - minId + 1) / gridSize
 
         var start = minId.toLong()
         var end = start + targetSize - 1

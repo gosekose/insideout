@@ -17,13 +17,7 @@ open class BatchStepExecutionListener : StepExecutionListener {
     override fun afterStep(stepExecution: StepExecution): ExitStatus? {
         val startTime = stepExecution.executionContext.getLong("startTime")
         val endTime = System.currentTimeMillis()
-        logger.info(
-            """
-            ======================================================================  
-            Step ${stepExecution.stepName} executed in ${endTime - startTime} ms
-            ======================================================================
-            """.trimIndent(),
-        )
+        logger.info("Step ${stepExecution.stepName} executed in ${endTime - startTime} ms")
         addAfterStep(stepExecution)
         return super.afterStep(stepExecution)
     }
