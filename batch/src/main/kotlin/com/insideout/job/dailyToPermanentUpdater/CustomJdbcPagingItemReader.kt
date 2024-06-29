@@ -55,100 +55,65 @@ open class CustomJdbcPagingItemReader<T>(
     }
 
     override fun doReadPage() {
-        if (results == null) {
-            results = CopyOnWriteArrayList()
-        } else {
-            results.clear()
-        }
+        results = results?.apply { clear() } ?: CopyOnWriteArrayList()
 
         val rowCallback = PagingRowMapper()
-        var query: List<T>
-
-        try {
-            if (page == 0) {
-                logger.info("SQL used for reading first page: [$firstPageSql]")
-                query = if (!parameterValues.isNullOrEmpty()) {
-                    if (this.queryProvider.isUsingNamedParameters) {
-                        namedParameterJdbcTemplate!!.query(
-                            firstPageSql, getParameterMap(parameterValues, null),
-                            rowCallback
-                        )
-                    } else {
-                        getJdbcTemplate().query(
-                            firstPageSql, rowCallback,
-                            *getParameterList(parameterValues, null).toTypedArray()
-                        )
-                    }
-                } else {
-                    getJdbcTemplate().query(firstPageSql, rowCallback)
+        val query: List<T> = try {
+            when {
+                page == 0 -> {
+                    logger.info("SQL used for reading first page: [$firstPageSql]")
+                    executeQuery(firstPageSql, rowCallback, parameterValues)
                 }
-            } else if (startAfterValues != null) {
-                previousStartAfterValues = startAfterValues
-                logger.info("SQL used for reading remaining pages: [$remainingPagesSql]")
 
-                query = if (this.queryProvider.isUsingNamedParameters) {
-                    namedParameterJdbcTemplate!!.query(
-                        remainingPagesSql,
-                        getParameterMap(parameterValues, startAfterValues), rowCallback
-                    )
-                } else {
-                    getJdbcTemplate().query(
-                        remainingPagesSql, rowCallback,
-                        *getParameterList(parameterValues, startAfterValues).toTypedArray()
-                    )
+                startAfterValues != null -> {
+                    previousStartAfterValues = startAfterValues
+                    logger.info("SQL used for reading remaining pages: [$remainingPagesSql]")
+                    executeQuery(remainingPagesSql, rowCallback, startAfterValues)
                 }
-            } else {
-                query = emptyList()
+
+                else -> emptyList()
             }
         } catch (e: Exception) {
             failedValues["page_$page"] = firstPageSql
-            query = retryWithPage(
-                page = page,
-                offsetCount = 1,
-                retryCount = 1,
-                rowCallback = rowCallback
-            )
+            logger.error("Error occurred while reading page: ", e)
+            retryWithPage(page, 1, 1, rowCallback)
         }
         results.addAll(query)
+    }
+
+    private fun executeQuery(sql: String, rowCallback: PagingRowMapper, parameters: Map<String, Any>?): List<T> {
+        return if (!parameters.isNullOrEmpty()) {
+            if (queryProvider.isUsingNamedParameters) {
+                namedParameterJdbcTemplate?.query(sql, getParameterMap(parameters, null), rowCallback) ?: emptyList()
+            } else {
+                getJdbcTemplate().query(sql, rowCallback, *getParameterList(parameters, null).toTypedArray())
+            }
+        } else {
+            getJdbcTemplate().query(sql, rowCallback)
+        }
     }
 
     private fun retryWithPage(
         page: Int,
         offsetCount: Int,
         retryCount: Int,
-        rowCallback: PagingRowMapper,
+        rowCallback: PagingRowMapper
     ): List<T> {
+        val adjustedMinValue = pageSize * offsetCount
+        val sqlWithOffset = "$firstPageSql OFFSET $adjustedMinValue"
+
+        logger.info("Retry SQL used for reading page $page with adjusted offset: [$sqlWithOffset]")
+
         return try {
-            val adjustedMinValue = pageSize * offsetCount
-            val sqlWithOffset = "$firstPageSql OFFSET $adjustedMinValue"
-
-            logger.info("Retry SQL used for reading page $page with adjusted offset: [$sqlWithOffset]")
-
-            return if (!parameterValues.isNullOrEmpty()) {
-                if (this.queryProvider.isUsingNamedParameters) {
-                    namedParameterJdbcTemplate!!.query(
-                        sqlWithOffset, getParameterMap(parameterValues, null),
-                        rowCallback
-                    )
-                } else {
-                    getJdbcTemplate().query(
-                        sqlWithOffset, rowCallback,
-                        *getParameterList(parameterValues, null).toTypedArray()
-                    )
-                }
-            } else {
-                getJdbcTemplate().query(sqlWithOffset, rowCallback)
-            }
+            executeQuery(sqlWithOffset, rowCallback, parameterValues)
         } catch (e: Exception) {
+            logger.error("Error occurred while retrying page: ", e)
             if (retryCount < 5) {
                 failedValues["page_$page"] = firstPageSql
-                retryWithPage(
-                    page = page + 1,
-                    offsetCount = offsetCount + 1,
-                    retryCount = retryCount + 1,
-                    rowCallback = rowCallback,
-                )
-            } else throw e
+                retryWithPage(page + 1, offsetCount + 1, retryCount + 1, rowCallback)
+            } else {
+                throw e
+            }
         }
     }
 
