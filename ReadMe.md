@@ -30,6 +30,7 @@
 
 <br/>
 
-## 📹 5. 기능 소개
+## 📹 5. 개발 소개
+- Spring Batch Partition 단위로 병렬 처리하기 (https://gose-kose.tistory.com/145)
 
 
