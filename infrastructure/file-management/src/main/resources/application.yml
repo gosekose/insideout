@@ -1,0 +1,39 @@
+spring:
+  config:
+    activate:
+      on-profile: default, local
+
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${AWS_ACCESS_KEY_ID}
+        secretKey: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: insideout
+    gcp:
+      project-id: ${GOOGLE_CLOUD_PROJECT_ID}
+      credentials:
+        location: ${GOOGLE_CLOUD_CREDENTIALS_LOCATION}
+      bucket: insideout
+
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${AWS_ACCESS_KEY_ID}
+        secretKey: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: insideout
+    gcp:
+      project-id: ${GOOGLE_CLOUD_PROJECT_ID}
+      credentials:
+        location: ${GOOGLE_CLOUD_CREDENTIALS_LOCATION}
+      bucket: insideout

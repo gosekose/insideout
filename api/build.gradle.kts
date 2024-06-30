@@ -17,6 +17,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
+    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:3.1.1")
 
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
     implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
@@ -30,6 +31,7 @@ dependencies {
     implementation(project(":infrastructure:persistence-mysql"))
     implementation(project(":infrastructure:authentication-jwt"))
     implementation(project(":infrastructure:redis"))
+    implementation(project(":infrastructure:file-management"))
     implementation(project(":application"))
 }
 
