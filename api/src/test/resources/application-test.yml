@@ -33,6 +33,21 @@ spring:
       host: localhost
       port: 6379
 
+  cloud:
+    aws:
+      credentials:
+        accessKey: test-access-key
+        secretKey: test-secret-key
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: test-bucket
+    gcp:
+      project-id: test-project-id
+      credentials:
+        json: google-cloud-json
+      bucket: insideout
+
   jackson:
     property-naming-strategy: SNAKE_CASE
 

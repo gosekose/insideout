@@ -25,7 +25,6 @@ open class CustomJdbcPagingItemReader<T>(
     private var parameterValues: Map<String, Any>? = null,
     private var fetchSize: Int = VALUE_NOT_SET,
 ) : AbstractPagingItemReader<T>(), InitializingBean {
-
     init {
         name = ClassUtils.getShortName(JdbcPagingItemReader::class.java)
     }
@@ -58,30 +57,35 @@ open class CustomJdbcPagingItemReader<T>(
         results = results?.apply { clear() } ?: CopyOnWriteArrayList()
 
         val rowCallback = PagingRowMapper()
-        val query: List<T> = try {
-            when {
-                page == 0 -> {
-                    logger.info("SQL used for reading first page: [$firstPageSql]")
-                    executeQuery(firstPageSql, rowCallback, parameterValues)
-                }
+        val query: List<T> =
+            try {
+                when {
+                    page == 0 -> {
+                        logger.info("SQL used for reading first page: [$firstPageSql]")
+                        executeQuery(firstPageSql, rowCallback, parameterValues)
+                    }
 
-                startAfterValues != null -> {
-                    previousStartAfterValues = startAfterValues
-                    logger.info("SQL used for reading remaining pages: [$remainingPagesSql]")
-                    executeQuery(remainingPagesSql, rowCallback, startAfterValues)
-                }
+                    startAfterValues != null -> {
+                        previousStartAfterValues = startAfterValues
+                        logger.info("SQL used for reading remaining pages: [$remainingPagesSql]")
+                        executeQuery(remainingPagesSql, rowCallback, startAfterValues)
+                    }
 
-                else -> emptyList()
+                    else -> emptyList()
+                }
+            } catch (e: Exception) {
+                failedValues["page_$page"] = firstPageSql
+                logger.error("Error occurred while reading page: ", e)
+                retryWithPage(page, 1, 1, rowCallback)
             }
-        } catch (e: Exception) {
-            failedValues["page_$page"] = firstPageSql
-            logger.error("Error occurred while reading page: ", e)
-            retryWithPage(page, 1, 1, rowCallback)
-        }
         results.addAll(query)
     }
 
-    private fun executeQuery(sql: String, rowCallback: PagingRowMapper, parameters: Map<String, Any>?): List<T> {
+    private fun executeQuery(
+        sql: String,
+        rowCallback: PagingRowMapper,
+        parameters: Map<String, Any>?,
+    ): List<T> {
         return if (!parameters.isNullOrEmpty()) {
             if (queryProvider.isUsingNamedParameters) {
                 namedParameterJdbcTemplate?.query(sql, getParameterMap(parameters, null), rowCallback) ?: emptyList()
@@ -97,7 +101,7 @@ open class CustomJdbcPagingItemReader<T>(
         page: Int,
         offsetCount: Int,
         retryCount: Int,
-        rowCallback: PagingRowMapper
+        rowCallback: PagingRowMapper,
     ): List<T> {
         val adjustedMinValue = pageSize * offsetCount
         val sqlWithOffset = "$firstPageSql OFFSET $adjustedMinValue"
@@ -146,7 +150,10 @@ open class CustomJdbcPagingItemReader<T>(
         super.open(executionContext)
     }
 
-    private fun getParameterMap(values: Map<String, Any>?, sortKeyValues: Map<String, Any>?): Map<String, Any> {
+    private fun getParameterMap(
+        values: Map<String, Any>?,
+        sortKeyValues: Map<String, Any>?,
+    ): Map<String, Any> {
         val parameterMap: MutableMap<String, Any> = LinkedHashMap()
         if (values != null) {
             parameterMap.putAll(values)
@@ -162,7 +169,10 @@ open class CustomJdbcPagingItemReader<T>(
         return parameterMap
     }
 
-    private fun getParameterList(values: Map<String, Any>?, sortKeyValue: Map<String, Any>?): List<Any> {
+    private fun getParameterList(
+        values: Map<String, Any>?,
+        sortKeyValue: Map<String, Any>?,
+    ): List<Any> {
         val sm: SortedMap<String, Any> = TreeMap()
         if (values != null) {
             sm.putAll(values)
@@ -182,10 +192,12 @@ open class CustomJdbcPagingItemReader<T>(
         return parameterList
     }
 
-
     private inner class PagingRowMapper : RowMapper<T> {
         @Throws(SQLException::class)
-        override fun mapRow(rs: ResultSet, rowNum: Int): T {
+        override fun mapRow(
+            rs: ResultSet,
+            rowNum: Int,
+        ): T {
             if (startAfterValues == null) {
                 startAfterValues = LinkedHashMap()
             }
@@ -195,7 +207,6 @@ open class CustomJdbcPagingItemReader<T>(
             return rowMapper.mapRow(rs, rowNum) as T
         }
     }
-
 
     private fun getJdbcTemplate(): JdbcTemplate {
         return namedParameterJdbcTemplate!!.jdbcOperations as JdbcTemplate

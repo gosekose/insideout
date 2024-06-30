@@ -132,8 +132,8 @@ class MemoryMarbleDailyToPermanentUpdateJobConfig(
             .fromClause("FROM memory_marbles")
             .whereClause(
                 "WHERE store_type = 'DAILY' " +
-                        " AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'" +
-                        " AND id BETWEEN $minValue AND $maxValue",
+                    " AND created_at >= '$startTimeStamp' AND created_at < '$endTimeStamp'" +
+                    " AND id BETWEEN $minValue AND $maxValue",
             )
             .sortKeys(sortKeys)
             .rowMapper(DaoRowMapper.memoryMarbleEntityRowMapper)

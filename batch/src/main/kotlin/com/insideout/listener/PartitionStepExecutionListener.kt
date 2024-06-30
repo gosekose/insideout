@@ -23,8 +23,8 @@ class PartitionStepExecutionListener(
                 FailedPartition.of(
                     minId = minId,
                     maxId = maxId,
-                    jobExecutionId = stepExecution.jobExecutionId
-                )
+                    jobExecutionId = stepExecution.jobExecutionId,
+                ),
             )
         } else if (stepExecution.exitStatus.exitCode == ExitStatus.COMPLETED.exitCode) {
             val failedValue =
@@ -45,4 +45,3 @@ class PartitionStepExecutionListener(
         }
     }
 }
-

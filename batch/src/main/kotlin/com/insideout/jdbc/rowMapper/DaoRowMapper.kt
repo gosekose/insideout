@@ -19,9 +19,9 @@ object DaoRowMapper {
                 feelingIds = rs.getString("feeling_ids").split(",").map { it.toLong() },
                 storeType = StoreType.valueOf(rs.getString("store_type")),
                 softDeleteStatus =
-                SoftDeleteStatus.valueOf(
-                    rs.getString("status"),
-                ),
+                    SoftDeleteStatus.valueOf(
+                        rs.getString("status"),
+                    ),
             ).apply {
                 createdAt = rs.getTimestamp("created_at").toInstant()
                 lastModifiedAt = rs.getTimestamp("last_modified_at").toInstant()

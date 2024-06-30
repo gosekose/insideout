@@ -78,16 +78,6 @@ class FeelingJpaEntity(
         }
     }
 
-    fun update(
-        score: Long,
-        type: FeelingType,
-    ): FeelingJpaEntity {
-        return this.apply {
-            this.score = score
-            this.type = type
-        }
-    }
-
     companion object {
         @JvmStatic
         fun from(feeling: Feeling): FeelingJpaEntity {

@@ -1,5 +1,6 @@
 package com.insideout.s3
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -42,5 +43,14 @@ class S3Configuration(
                 ),
             )
             .build()
+    }
+
+    @Qualifier("fileManagementS3Adapter")
+    @Bean
+    fun fileManagementS3Adapter(): FileManagementS3Adapter {
+        return FileManagementS3Adapter(
+            s3Presigner = s3Presigner(),
+            awsS3Properties = awsS3Properties,
+        )
     }
 }

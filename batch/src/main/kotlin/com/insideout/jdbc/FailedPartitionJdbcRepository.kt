@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository
 
 interface FailedPartitionJdbcRepository {
     fun save(failedPartition: FailedPartition)
+
     fun saveAll(failedPartitions: List<FailedPartition>)
 }
 

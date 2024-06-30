@@ -2,7 +2,6 @@ spring:
   config:
     activate:
       on-profile: default, local
-
   cloud:
     aws:
       credentials:
@@ -11,13 +10,12 @@ spring:
       region:
         static: ap-northeast-2
       s3:
-        bucket: insideout
+        bucket: ${AWS_BUCKET}
     gcp:
       project-id: ${GOOGLE_CLOUD_PROJECT_ID}
       credentials:
-        location: ${GOOGLE_CLOUD_CREDENTIALS_LOCATION}
+        json: ${GOOGLE_CLOUD_JSON}
       bucket: insideout
-
 ---
 spring:
   config:
@@ -31,9 +29,9 @@ spring:
       region:
         static: ap-northeast-2
       s3:
-        bucket: insideout
+        bucket: ${AWS_BUCKET}
     gcp:
       project-id: ${GOOGLE_CLOUD_PROJECT_ID}
       credentials:
-        location: ${GOOGLE_CLOUD_CREDENTIALS_LOCATION}
+        json: ${GOOGLE_CLOUD_JSON}
       bucket: insideout

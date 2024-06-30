@@ -9,6 +9,6 @@ data class GcsProperties(
     val bucket: String,
 ) {
     data class Credential(
-        val location: String,
+        val json: String,
     )
 }

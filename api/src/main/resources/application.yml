@@ -44,6 +44,21 @@ spring:
       host: localhost
       port: 6379
 
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${AWS_ACCESS_KEY_ID}
+        secretKey: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: ${AWS_BUCKET}
+    gcp:
+      project-id: ${GOOGLE_CLOUD_PROJECT_ID}
+      credentials:
+        json: ${GOOGLE_CLOUD_JSON}
+      bucket: insideout
+
 jwt:
   secret-key: test==gslQJkmrazoY1ytKUji6V0Qd49dWiCXxXVFMFQLezNuxEoFTQ7Xl6A1F7piKFybsZnoE06nnvaMbpAbPcKoeBg==
 
@@ -83,5 +98,19 @@ spring:
       host: ${INSIDEOUT_REDIS_HOST}
       port: ${INSIDEOUT_REDIS_PORT}
 
+  cloud:
+    aws:
+      credentials:
+        accessKey: ${AWS_ACCESS_KEY_ID}
+        secretKey: ${AWS_SECRET_ACCESS_KEY}
+      region:
+        static: ap-northeast-2
+      s3:
+        bucket: ${AWS_BUCKET}
+    gcp:
+      project-id: ${GOOGLE_CLOUD_PROJECT_ID}
+      credentials:
+        json: ${GOOGLE_CLOUD_JSON}
+      bucket: insideout
 jwt:
   secret-key: ${INSIDEOUT_JWT_SECRET_KEY}
