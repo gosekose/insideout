@@ -1,6 +1,7 @@
 package com.insideout.adapter
 
 import com.insideout.gcs.FileManagementGCSAdapter
+import com.insideout.model.file.FileMetadata
 import com.insideout.model.file.PresignedUrl
 import com.insideout.s3.FileManagementS3Adapter
 import com.insideout.usecase.file.port.FileManagementPort
@@ -36,15 +37,12 @@ class FileManagementAdapter(
 
     override fun generateFileDownloadPresignedUrl(
         fileKey: String,
+        vendor: FileMetadata.Vendor,
         durationMillis: Long,
     ): PresignedUrl {
-        return circuitBreaker.run({
-            logger.info("s3 Adapter Try")
-            s3Adapter.generateFileDownloadPresignedUrl(fileKey, durationMillis)
-        }, { throwable ->
-            logger.error("s3 Adapter Exception = [${throwable.message}]")
-            logger.info("gcs Adapter Try")
-            gcsAdapter.generateFileDownloadPresignedUrl(fileKey, durationMillis)
-        })
+        return when (vendor) {
+            FileMetadata.Vendor.S3 -> s3Adapter.generateFileDownloadPresignedUrl(fileKey, durationMillis)
+            FileMetadata.Vendor.GCS -> gcsAdapter.generateFileDownloadPresignedUrl(fileKey, durationMillis)
+        }
     }
 }
