@@ -6,10 +6,28 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1IiwiZXhwIjoxNzUwOTAxOTAyf
 Accept: */*
 Connection: keep-alive
 
+> {%
+    client.test("Fetch Presigned URL", function () {
+        client.assert(response.status === 200);
+        var responseBody = JSON.parse(response.body);
+        client.global.set("fileUrl", responseBody.body.url);
+    });
+%}
+
+### 2. 파일 업로드 (presignedUrl)
+PUT {{fileUrl}}
+Content-Type: text/plain
+
+< ./testFile.txt
+
 ### 1. 다운로드
 
-GET {{baseUrl}}/api/v1/files/5/presignedUrl/download
+GET {{baseUrl}}/api/v1/files/7/presignedUrl/download
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1IiwiZXhwIjoxNzUwOTAxOTAyfQ.clfMldasIiyPYO35_XF5iNhEO5n3VH9TuV8kVuUECBF1x39PqzLm99pVi7796QwBsSczHOlJ4zz2dK6KFLwXqA
 Accept: */*
 Connection: keep-alive
+
+### 2. 파일 다운로드 (presignedUrl)
+GET {{fileUrl}}
+Content-Type: text/plain
