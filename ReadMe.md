@@ -11,6 +11,8 @@
 - members: 회원 테이블
 - feelings: 감정 테이블
 - memory_marbles: 기억 구슬 테이블
+  - file_content: file_metadata의 id, fileName을 json으로 구성
+- file_metadatas: 첨부파일
 
 <br/>
 
@@ -32,5 +34,4 @@
 
 ## 📹 5. 개발 소개
 - Spring Batch Partition 단위로 병렬 처리하기 (https://gose-kose.tistory.com/145)
-
-
+- File Upload / Download 서킷브레키어 적용
