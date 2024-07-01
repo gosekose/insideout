@@ -34,4 +34,4 @@
 
 ## 📹 5. 개발 소개
 - Spring Batch Partition 단위로 병렬 처리하기 (https://gose-kose.tistory.com/145)
-- File Upload / Download 서킷브레키어 적용
+- 외부 스토리지를 활용하여 첨부파일 관리하기 (https://gose-kose.tistory.com/146)
