@@ -15,3 +15,6 @@ create index idx_file_matadatas__created_at
 
 create index idx_file_matadatas__member_id
     on file_metadatas (member_id);
+
+alter table insideout.memory_marbles
+    add file_content text null;

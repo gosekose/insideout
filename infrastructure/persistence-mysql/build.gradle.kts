@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("com.google.code.gson:gson:2.8.9")
     runtimeOnly("com.mysql:mysql-connector-j")
 
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
@@ -13,6 +14,7 @@ dependencies {
     testImplementation("com.h2database:h2")
 
     implementation(project(":domain"))
+    implementation(project(":lib"))
 }
 
 noArg {

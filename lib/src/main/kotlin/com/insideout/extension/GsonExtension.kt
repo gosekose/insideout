@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import java.lang.reflect.Type
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -34,6 +35,21 @@ class InstantAdapter : TypeAdapter<Instant>() {
 fun Any.toJson(): String = GSON.toJson(this)
 
 fun <T> String.parseJson(type: Class<T>): T = GSON.fromJson(this, type)
+
+inline fun <reified T> Gson.fromJsonToType(
+    json: String,
+    type: Type,
+): T? {
+    return try {
+        this.fromJson(json, type)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+inline fun <reified T> String.fromJsonToType(type: Type): T? {
+    return GSON.fromJson<T>(this, type)
+}
 
 class LocalDateTimeAdapter : TypeAdapter<LocalDateTime>() {
     override fun write(

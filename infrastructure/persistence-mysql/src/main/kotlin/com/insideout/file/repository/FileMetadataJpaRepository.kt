@@ -9,4 +9,10 @@ interface FileMetadataJpaRepository : JpaRepository<FileMetadataJpaEntity, Long>
         id: Long,
         status: SoftDeleteStatus = SoftDeleteStatus.ACTIVE,
     ): FileMetadataJpaEntity?
+
+    fun findByIdInAndMemberIdAndStatus(
+        ids: List<Long>,
+        memberId: Long,
+        status: SoftDeleteStatus = SoftDeleteStatus.ACTIVE,
+    ): List<FileMetadataJpaEntity>
 }

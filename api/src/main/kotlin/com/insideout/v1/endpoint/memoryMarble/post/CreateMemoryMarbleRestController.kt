@@ -6,6 +6,7 @@ import com.insideout.model.feeling.type.FeelingType
 import com.insideout.model.memoryMarble.model.MemoryMarbleContent
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
 import com.insideout.v1.endpoint.objectField.MemoryMarbleHttpResponse
+import com.insideout.v1.endpoint.requestField.MemoryMarbleContentField
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -29,14 +30,18 @@ class CreateMemoryMarbleRestController(
     }
 
     data class HttpRequest(
-        val content: MemoryMarbleContent,
+        val content: MemoryMarbleContentField,
         val feelings: List<FeelingDefinitionHttpField>,
     ) {
         fun toAggregateDefinition(memberId: Long): Definition {
             return Definition(
                 memberId = memberId,
                 feelingDefinitions = feelings.map { it.toFeelingDefinition() },
-                memoryMarbleContent = MemoryMarbleContent(content.description),
+                memoryMarbleContent =
+                    MemoryMarbleContent(
+                        description = content.description,
+                        fileContents = content.toFileDefinition(),
+                    ),
             )
         }
 

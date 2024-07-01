@@ -14,4 +14,14 @@ class FileMetadataReaderAdapter(
     override fun getByIdOrNull(id: Long): FileMetadata? {
         return fileMetadataJpaRepository.findByIdAndStatus(id)?.toModel()
     }
+
+    override fun getByIdsAndMemberId(
+        ids: List<Long>,
+        memberId: Long,
+    ): List<FileMetadata> {
+        return fileMetadataJpaRepository.findByIdInAndMemberIdAndStatus(
+            ids = ids,
+            memberId = memberId,
+        ).map { it.toModel() }
+    }
 }

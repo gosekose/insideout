@@ -12,12 +12,31 @@ data class MemoryMarbleHttpResponse(
 ) {
     data class MemoryMarbleContentHttpField(
         val description: String?,
+        val fileContents: List<FileContentField>,
     ) {
+        data class FileContentField(
+            val id: Long,
+            val fileName: String,
+        ) {
+            companion object {
+                @JvmStatic
+                fun from(fileContent: MemoryMarbleContent.FileContent): FileContentField {
+                    return with(fileContent) {
+                        FileContentField(
+                            id = id,
+                            fileName = fileName,
+                        )
+                    }
+                }
+            }
+        }
+
         companion object {
             @JvmStatic
             fun from(content: MemoryMarbleContent): MemoryMarbleContentHttpField {
                 return MemoryMarbleContentHttpField(
                     description = content.description,
+                    fileContents = content.fileContents.map(FileContentField::from),
                 )
             }
         }

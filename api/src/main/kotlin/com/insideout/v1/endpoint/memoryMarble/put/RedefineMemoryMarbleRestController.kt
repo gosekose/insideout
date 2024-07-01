@@ -6,6 +6,7 @@ import com.insideout.model.memoryMarble.model.MemoryMarbleContent
 import com.insideout.usecase.feeling.CreateFeelingsUseCase
 import com.insideout.usecase.feeling.RedefineFeelingsUseCase
 import com.insideout.v1.endpoint.objectField.MemoryMarbleHttpResponse
+import com.insideout.v1.endpoint.requestField.MemoryMarbleContentField
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
@@ -33,7 +34,7 @@ class RedefineMemoryMarbleRestController(
     data class HttpRequest(
         val feelingsDefinition: List<FeelingDefinitionHttpField>,
         val feelingsRedefinition: List<FeelingRedefinitionHttpField>,
-        val content: MemoryMarbleContent,
+        val content: MemoryMarbleContentField,
     ) {
         data class FeelingDefinitionHttpField(
             val score: Long,
@@ -66,7 +67,10 @@ class RedefineMemoryMarbleRestController(
                 id = id,
                 feelingDefinitions = feelingsDefinition.map { it.toFeelingDefinition() },
                 feelingRedefinitions = feelingsRedefinition.map { it.toFeelingRedefinition() },
-                memoryMarbleContent = content,
+                MemoryMarbleContent(
+                    description = content.description,
+                    fileContents = content.toFileDefinition(),
+                ),
             )
         }
     }
