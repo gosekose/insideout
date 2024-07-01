@@ -1,34 +1,24 @@
-package com.insideout.gcs
+package com.insideout.gcs.test
 
-import com.google.auth.oauth2.ServiceAccountCredentials
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageOptions
+import com.insideout.gcs.FileManagementGCSAdapter
+import com.insideout.gcs.GcsProperties
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import java.io.ByteArrayInputStream
 
-@Profile("!test")
+@Profile("test")
 @Configuration
 @EnableConfigurationProperties(GcsProperties::class)
-class GcsConfiguration(
+class GcsTestActiveProfileConfiguration(
     private val gcsProperties: GcsProperties,
 ) {
     @Bean
     fun gcsStorage(): Storage {
-        val credentials =
-            ServiceAccountCredentials
-                .fromStream(ByteArrayInputStream(gcsProperties.credentials.json.toByteArray()))
-                .createScoped(
-                    listOf(
-                        "https://www.googleapis.com/auth/cloud-platform",
-                        "https://www.googleapis.com/auth/iam",
-                    ),
-                )
         return StorageOptions.newBuilder()
-            .setCredentials(credentials)
             .setProjectId(gcsProperties.projectId)
             .build()
             .service

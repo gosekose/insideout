@@ -1,0 +1,7 @@
+### 1. 기억구슬 생성
+
+GET {{baseUrl}}/api/v1/files/presignedUrl?fileName=testFile.txt
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1IiwiZXhwIjoxNzUwOTAxOTAyfQ.clfMldasIiyPYO35_XF5iNhEO5n3VH9TuV8kVuUECBF1x39PqzLm99pVi7796QwBsSczHOlJ4zz2dK6KFLwXqA
+Accept: */*
+Connection: keep-alive

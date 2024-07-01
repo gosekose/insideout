@@ -15,7 +15,7 @@ spring:
       project-id: ${GOOGLE_CLOUD_PROJECT_ID}
       credentials:
         json: ${GOOGLE_CLOUD_JSON}
-      bucket: insideout
+      bucket: ${GOOGLE_CLOUD_BUCKET}
 ---
 spring:
   config:
@@ -34,4 +34,4 @@ spring:
       project-id: ${GOOGLE_CLOUD_PROJECT_ID}
       credentials:
         json: ${GOOGLE_CLOUD_JSON}
-      bucket: insideout
+      bucket: ${GOOGLE_CLOUD_BUCKET}
