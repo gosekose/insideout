@@ -14,7 +14,29 @@ class FileManagementGCSAdapter(
     private val storage: Storage,
     private val gcsProperties: GcsProperties,
 ) : FileManagementPort {
-    override fun generatePresignedUrl(
+    override fun generateFileUploadPresignedUrl(
+        fileKey: String,
+        durationMillis: Long,
+    ): PresignedUrl {
+        val blobInfo = BlobInfo.newBuilder(gcsProperties.bucket, fileKey).build()
+
+        val url =
+            storage.signUrl(
+                blobInfo,
+                durationMillis,
+                TimeUnit.MILLISECONDS,
+                Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
+                Storage.SignUrlOption.withV4Signature(),
+            )
+
+        return PresignedUrl(
+            url = url.toString(),
+            fileKey = fileKey,
+            vendor = FileMetadata.Vendor.GCS,
+        )
+    }
+
+    override fun generateFileDownloadPresignedUrl(
         fileKey: String,
         durationMillis: Long,
     ): PresignedUrl {

@@ -11,12 +11,12 @@ class GenerateFileUploadPresignedUrlService(
     private val fileMetadataSaver: FileMetadataSaver,
     private val fileManagementPort: FileManagementPort,
 ) : GenerateFileUploadPresignedUrlUseCase {
-    override fun generatePresignedUrl(command: GenerateFileUploadPresignedUrlUseCase.Command): PresignedUrl {
+    override fun generateFileUploadPresignedUrl(command: GenerateFileUploadPresignedUrlUseCase.Command): PresignedUrl {
         val (memberId, fileName) = command
         val fileMetadata = fileMetadataSaver.save(FileMetadata.of(memberId, fileName))
 
         val presignedUrl =
-            fileManagementPort.generatePresignedUrl(
+            fileManagementPort.generateFileUploadPresignedUrl(
                 fileKey = fileMetadata.fileKey,
                 durationMillis = DURATION_MILLIS,
             )

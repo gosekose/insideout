@@ -20,17 +20,31 @@ class FileManagementAdapter(
     private val circuitBreaker = circuitBreakerFactory.create("s3CircuitBreaker")
     private val logger = LoggerFactory.getLogger(FileManagementGCSAdapter::class.java)
 
-    override fun generatePresignedUrl(
+    override fun generateFileUploadPresignedUrl(
         fileKey: String,
         durationMillis: Long,
     ): PresignedUrl {
         return circuitBreaker.run({
             logger.info("s3 Adapter Try")
-            s3Adapter.generatePresignedUrl(fileKey, durationMillis)
+            s3Adapter.generateFileUploadPresignedUrl(fileKey, durationMillis)
         }, { throwable ->
             logger.error("s3 Adapter Exception = [${throwable.message}]")
             logger.info("gcs Adapter Try")
-            gcsAdapter.generatePresignedUrl(fileKey, durationMillis)
+            gcsAdapter.generateFileUploadPresignedUrl(fileKey, durationMillis)
+        })
+    }
+
+    override fun generateFileDownloadPresignedUrl(
+        fileKey: String,
+        durationMillis: Long,
+    ): PresignedUrl {
+        return circuitBreaker.run({
+            logger.info("s3 Adapter Try")
+            s3Adapter.generateFileDownloadPresignedUrl(fileKey, durationMillis)
+        }, { throwable ->
+            logger.error("s3 Adapter Exception = [${throwable.message}]")
+            logger.info("gcs Adapter Try")
+            gcsAdapter.generateFileDownloadPresignedUrl(fileKey, durationMillis)
         })
     }
 }

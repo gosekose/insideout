@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController
 class GenerateFileUploadPresignedUrlRestController(
     private val generateFileUploadPresignedUrlUseCase: GenerateFileUploadPresignedUrlUseCase,
 ) {
-    @GetMapping("/api/v1/files/presignedUrl")
+    @GetMapping("/api/v1/files/presignedUrl/upload")
     fun generatePresignedUrl(
         @RequestHeader("memberId") memberId: Long,
         @RequestParam fileName: String,
     ): PresignedUrlMetadataHttpResponse {
-        return generateFileUploadPresignedUrlUseCase.generatePresignedUrl(
+        return generateFileUploadPresignedUrlUseCase.generateFileUploadPresignedUrl(
             GenerateFileUploadPresignedUrlUseCase.Command(
                 memberId = memberId,
                 fileName = fileName,
